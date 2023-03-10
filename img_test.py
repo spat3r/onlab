@@ -66,37 +66,46 @@ except IOError:
     pass
 
 try: 
-    goldi  = cv.imread("goldi.jpg") 
+    goldi  = cv.imread("goldi.jpg", 1) 
 except IOError:
     pass
 
 
 # corgi.show()
 # goldi.show()
-im = goldi.copy()
+cv.imshow('image', goldi)
 
-# for x in im:
-#     for y in im[x]:
-#         im[x][y] = 0
+img = goldi.copy()
+
+# rows,cols,_ = img.shape
+
+# for i in range(rows):
+#     for j in range(cols):
+#         img[i,j] = [1,2,1]
 
 
 # im.show()
 
 
 # kernel = np.ones((5,5),np.float32)/25
-kernel = [[1,2,1],[0,0,0],[-1,-2,-1]]
-dst = cv.filter2D(im,-1,kernel)
+kernel = np.array([[1, 0, -1],
+                   [2, 0, -2],
+                   [1, 0, -1]])
+dst = cv.filter2D(img,-1,kernel)
 
-plt.subplot(121),plt.imshow(im),plt.title('Original')
+cv.imshow('dst', dst)
+cv.imshow('goldi', img)
+
+plt.subplot(121),plt.imshow(goldi),plt.title('Original')
 plt.xticks([]), plt.yticks([])
 plt.subplot(122),plt.imshow(dst),plt.title('Averaging')
 plt.xticks([]), plt.yticks([])
 plt.show()
 
 
-blur = cv.blur(im,(5,5))
+blur = cv.blur(img,(5,5))
 
-plt.subplot(121),plt.imshow(im),plt.title('Original')
+plt.subplot(121),plt.imshow(img),plt.title('Original')
 plt.xticks([]), plt.yticks([])
 plt.subplot(122),plt.imshow(blur),plt.title('Blurred')
 plt.xticks([]), plt.yticks([])
