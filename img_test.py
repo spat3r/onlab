@@ -110,3 +110,18 @@ plt.xticks([]), plt.yticks([])
 plt.subplot(122),plt.imshow(blur),plt.title('Blurred')
 plt.xticks([]), plt.yticks([])
 plt.show()
+
+def 
+
+for i in range(rows):
+    for j in range(cols):
+        new_image[i,j] = convolution(kernel, img, i, j)
+
+
+# TODO:
+# milyen interfészek vannak
+# milyen gyorsan mennek, MHz
+
+
+
+
