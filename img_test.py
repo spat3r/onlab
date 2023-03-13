@@ -87,40 +87,65 @@ img = goldi.copy()
 # im.show()
 
 
-# kernel = np.ones((5,5),np.float32)/25
-kernel = np.array([[1, 0, -1],
-                   [2, 0, -2],
-                   [1, 0, -1]])
-dst = cv.filter2D(img,-1,kernel)
+# # kernel = np.ones((5,5),np.float32)/25
+# kernel = np.array([[1, 0, -1],
+#                    [2, 0, -2],
+#                    [1, 0, -1]])
+# dst = cv.filter2D(img,-1,kernel)
 
-cv.imshow('dst', dst)
-cv.imshow('goldi', img)
+# cv.imshow('dst', dst)
+# cv.imshow('goldi', img)
 
-plt.subplot(121),plt.imshow(goldi),plt.title('Original')
-plt.xticks([]), plt.yticks([])
-plt.subplot(122),plt.imshow(dst),plt.title('Averaging')
-plt.xticks([]), plt.yticks([])
-plt.show()
+# plt.subplot(121),plt.imshow(goldi),plt.title('Original')
+# plt.xticks([]), plt.yticks([])
+# plt.subplot(122),plt.imshow(dst),plt.title('Averaging')
+# plt.xticks([]), plt.yticks([])
+# plt.show()
 
 
-blur = cv.blur(img,(5,5))
+# blur = cv.blur(img,(5,5))
 
-plt.subplot(121),plt.imshow(img),plt.title('Original')
-plt.xticks([]), plt.yticks([])
-plt.subplot(122),plt.imshow(blur),plt.title('Blurred')
-plt.xticks([]), plt.yticks([])
-plt.show()
+# plt.subplot(121),plt.imshow(img),plt.title('Original')
+# plt.xticks([]), plt.yticks([])
+# plt.subplot(122),plt.imshow(blur),plt.title('Blurred')
+# plt.xticks([]), plt.yticks([])
+# plt.show()
 
-def 
+    # for i in range():
+    #     for j in range():
 
-for i in range(rows):
-    for j in range(cols):
-        new_image[i,j] = convolution(kernel, img, i, j)
+def convolution(kernel, img, i, j):
+    return img[i,j] * kernel
 
+height = img.shape[0]
+width = img.shape[1]
+
+test_kernel = 0.7
+new_image = np.zeros((height,width,3), np.uint8)
+
+for i in range(height):
+    for j in range(width):
+        new_image[i,j] = convolution(test_kernel, img, i, j)
+
+cv.imshow('final', new_image)
+cv.waitKey(0)
 
 # TODO:
 # milyen interfészek vannak
 # milyen gyorsan mennek, MHz
+
+
+# használhatjuk szinkron, aszinkron fifot
+
+# lehetőleg platform független legyen
+
+
+# cycle accuratemodelling
+
+# meg kell nézni hogy 
+
+# fix pontos modelling
+
 
 
 
