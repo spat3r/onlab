@@ -74,6 +74,8 @@ except IOError:
 # corgi.show()
 # goldi.show()
 cv.imshow('image', goldi)
+gray = cv.cvtColor(goldi, cv.COLOR_BGR2GRAY)
+cv.imshow('image gray', gray)
 
 img = goldi.copy()
 
@@ -88,9 +90,9 @@ img = goldi.copy()
 
 
 # # kernel = np.ones((5,5),np.float32)/25
-# kernel = np.array([[1, 0, -1],
-#                    [2, 0, -2],
-#                    [1, 0, -1]])
+kernel = np.array([[-1, 0, 1],
+                   [-2, 0, 2],
+                   [-1, 0, 1]])
 # dst = cv.filter2D(img,-1,kernel)
 
 # cv.imshow('dst', dst)
@@ -115,19 +117,35 @@ img = goldi.copy()
     #     for j in range():
 
 def convolution(kernel, img, i, j):
-    return img[i,j] * kernel
+    h = img.shape[0]-1
+    w = img.shape[1]-1
+    result = img[i,j] * kernel[1, 1]
+    for x in range(3):
+        for y in range(3):
+            result += (img[i+x-1,j+y-1] * kernel[y, x]) if (i%h and j%w) else 0
+            # print(f"kernel[{y},{x}] = {kernel[y,x]}")
+            # print(f"img[{i+x-1},{j+y-1}] = {img[i+x-1,j+y-1]}")
+            # print(f"result = {result}\n")
+            
+    return result
 
 height = img.shape[0]
 width = img.shape[1]
 
 test_kernel = 0.7
 new_image = np.zeros((height,width,3), np.uint8)
+grad_x = cv.Sobel(gray, cv.CV_16S, 1, 0, ksize=3, scale=1, delta=0, borderType=cv.BORDER_DEFAULT)
+
+print(kernel)
+cv.waitKey(0)
+
 
 for i in range(height):
     for j in range(width):
-        new_image[i,j] = convolution(test_kernel, img, i, j)
+        new_image[i,j] = convolution(kernel, gray, i, j)
 
 cv.imshow('final', new_image)
+cv.imshow('cvfinal', grad_x)
 cv.waitKey(0)
 
 # TODO:
