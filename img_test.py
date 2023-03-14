@@ -74,8 +74,6 @@ except IOError:
 # corgi.show()
 # goldi.show()
 cv.imshow('image', goldi)
-gray = cv.cvtColor(cv.GaussianBlur(goldi, (3, 3), 0), cv.COLOR_BGR2GRAY)
-cv.imshow('image gray', gray)
 
 img = goldi.copy()
 
@@ -90,9 +88,9 @@ img = goldi.copy()
 
 
 # # kernel = np.ones((5,5),np.float32)/25
-kernel = np.array([[-1, 0, 1],
-                   [-2, 0, 2],
-                   [-1, 0, 1]])
+# kernel = np.array([[-1, 0, 1],
+#                    [-2, 0, 2],
+#                    [-1, 0, 1]])
 # dst = cv.filter2D(img,-1,kernel)
 
 # cv.imshow('dst', dst)
@@ -137,6 +135,10 @@ def sobel(img):
 
     grad_x = np.zeros((height,width,3), np.uint8)
     grad_y = np.zeros((height,width,3), np.uint8)
+
+    gray = cv.cvtColor(cv.GaussianBlur(img, (3, 3), 0), cv.COLOR_BGR2GRAY)
+    cv.imshow('image gray', gray)
+
     new_image = np.zeros((height,width,3), np.uint8)
 
     blur_kernel = 0.1 * np.array([[1, 1, 1],
