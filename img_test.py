@@ -3,8 +3,8 @@ import numpy as np
 # from PIL import Image
 # from PIL import ImageFilter
 # from pathlib import Path
-# import math
-from matplotlib import pyplot as plt
+import math
+# from matplotlib import pyplot as plt
 import cv2 as cv
 
 # legacy code :d
@@ -126,8 +126,7 @@ def convolution(kernel, img, i, j):
             # print(f"kernel[{y},{x}] = {kernel[y,x]}")
             # print(f"img[{i+x-1},{j+y-1}] = {img[i+x-1,j+y-1]}")
             # print(f"result = {result}\n")
-            
-    return result
+    return result if (result > 0) else -result
 
 height = img.shape[0]
 width = img.shape[1]
@@ -163,8 +162,3 @@ cv.waitKey(0)
 # meg kell nézni hogy 
 
 # fix pontos modelling
-
-
-
-
-
