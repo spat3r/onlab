@@ -119,10 +119,13 @@ kernel = np.array([[-1, 0, 1],
 def convolution(kernel, img, i, j):
     h = img.shape[0]-1
     w = img.shape[1]-1
-    result = img[i,j] * kernel[1, 1]
-    for x in range(3):
-        for y in range(3):
-            result += (img[i+x-1,j+y-1] * kernel[y, x]) if (i%h and j%w) else 0
+    kh = kernel.shape[0]
+    kw = kernel.shape[1]
+    result = 0
+
+    for k in range(kh):
+        for l in range(kw):
+            result += (img[i+k-1,j+l-1] * kernel[k, l]) if (i%h and j%w) else 0
             # print(f"kernel[{y},{x}] = {kernel[y,x]}")
             # print(f"img[{i+x-1},{j+y-1}] = {img[i+x-1,j+y-1]}")
             # print(f"result = {result}\n")
@@ -145,6 +148,8 @@ for i in range(height):
         grad_x[i,j] = convolution(kernel_x, gray, i, j)
         grad_y[i,j] = convolution(kernel_y, gray, i, j)
         new_image[i,j] = 0.5 * grad_x[i,j] + 0.5 * grad_y[i,j]
+
+# new_image = cv.addWeighted(grad_x, 0.5, grad_y, 0.5, 0)
 
 cv.imshow('final', new_image)
 cv.waitKey(0)
