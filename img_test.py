@@ -13,7 +13,7 @@ except IOError:
     pass
 
 try: 
-    goldi  = cv.imread("goldi.jpg", 1) 
+    goldi  = cv.imread("test_pic.jpg",1) 
 except IOError:
     pass
 
@@ -39,7 +39,7 @@ def convolution(kernel, img, i, j):
     for k in range(kh):
         for l in range(kw):
             result += (img[i+k-1,j+l-1] * kernel[k, l]) if (i%h and j%w) else 0
-    return result if (result > 0) else -result
+    return result if (result >= 0) else -result
 
 def sobel(img):
     height = img.shape[0]
@@ -68,9 +68,32 @@ def sobel(img):
 
     return new_image
 
+def sobel_net(img):
+    
+    window_name = ('Sobel Demo - Simple Edge Detector')
+    scale = 1
+    delta = 0
+    ddepth = cv.CV_16S
+
+    src = img.copy()
+    # Check if image is loaded fine
+        
+    src = cv.GaussianBlur(src, (3, 3), 0)
+    
+    gray = cv.cvtColor(src, cv.COLOR_BGR2GRAY)
+    
+    grad_x = cv.Sobel(gray, ddepth, 1, 0, ksize=3, scale=scale, delta=delta, borderType=cv.BORDER_DEFAULT)
+    grad_y = cv.Sobel(gray, ddepth, 0, 1, ksize=3, scale=scale, delta=delta, borderType=cv.BORDER_DEFAULT)
+    
+    abs_grad_x = cv.convertScaleAbs(grad_x)
+    abs_grad_y = cv.convertScaleAbs(grad_y)
+
+    grad = cv.addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0)
+    return grad
 
 cv.imshow('startpick', goldi)
 cv.imshow('my_sobel', sobel(goldi))
+cv.imshow('net_sobel', sobel_net(goldi))
 
 
 cv.waitKey(0)
