@@ -114,6 +114,17 @@ img = goldi.copy()
     # for i in range():
     #     for j in range():
 
+def rgb2gray(img):
+    height = img.shape[0]
+    width = img.shape[1]
+    Y = np.zeros((height,width), np.uint8)
+    print(Y.shape)
+
+    for i in range(height):
+        for j in range(width):
+            Y[i,j] = 0.2989 * img[i,j][0] + 0.5870 * img[i,j][1] + 0.1140 * img[i,j][2] 
+    return Y
+
 def convolution(kernel, img, i, j):
     h = img.shape[0]-1
     w = img.shape[1]-1
@@ -126,20 +137,12 @@ def convolution(kernel, img, i, j):
             result += (img[i+k-1,j+l-1] * kernel[k, l]) if (i%h and j%w) else 0
             # print(f"kernel[{y},{x}] = {kernel[y,x]}")
             # print(f"img[{i+x-1},{j+y-1}] = {img[i+x-1,j+y-1]}")
-            # print(f"result = {result}\n")
+    # print(f"result = {result}\n")
     return result if (result > 0) else -result
 
 def sobel(img):
     height = img.shape[0]
     width = img.shape[1]
-
-    grad_x = np.zeros((height,width,3), np.uint8)
-    grad_y = np.zeros((height,width,3), np.uint8)
-
-    gray = cv.cvtColor(cv.GaussianBlur(img, (3, 3), 0), cv.COLOR_BGR2GRAY)
-    cv.imshow('image gray', gray)
-
-    new_image = np.zeros((height,width,3), np.uint8)
 
     blur_kernel = 0.1 * np.array([[1, 1, 1],
                                   [1, 2, 1],
@@ -150,11 +153,27 @@ def sobel(img):
                         [-1, 0, 1]])
     kernel_y = -kernel_x.transpose()
 
+    # grad_x = np.zeros((height,width,3), np.uint8)
+    # grad_y = np.zeros((height,width,3), np.uint8)
+    gb =  np.zeros((height,width,3), np.uint8)
+
+    gray = rgb2gray(img)
+
     for i in range(height):
         for j in range(width):
-            grad_x[i,j] = convolution(kernel_x, gray, i, j)
-            grad_y[i,j] = convolution(kernel_y, gray, i, j)
-            new_image[i,j] = 0.5 * grad_x[i,j] + 0.5 * grad_y[i,j]
+            gb[i,j] = convolution(blur_kernel, gray, i, j)
+
+    cv.imshow('image gray', gb)
+
+    new_image = np.zeros((height,width,3), np.uint8)
+
+
+    for i in range(height):
+        for j in range(width):
+            # grad_x[i,j] = convolution(kernel_x, gray, i, j)
+            # grad_y[i,j] = convolution(kernel_y, gray, i, j)
+            # new_image[i,j] = 0.5 * grad_x[i,j] + 0.5 * grad_y[i,j]
+            new_image[i,j] = 0.5 * convolution(kernel_x, gray, i, j) + 0.5 * convolution(kernel_y, gray, i, j)
     
     # abs_grad_x = cv.convertScaleAbs(grad_x)
     # abs_grad_y = cv.convertScaleAbs(grad_y)
