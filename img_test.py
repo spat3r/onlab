@@ -74,7 +74,7 @@ except IOError:
 # corgi.show()
 # goldi.show()
 cv.imshow('image', goldi)
-gray = cv.cvtColor(goldi, cv.COLOR_BGR2GRAY)
+gray = cv.cvtColor(cv.GaussianBlur(goldi, (3, 3), 0), cv.COLOR_BGR2GRAY)
 cv.imshow('image gray', gray)
 
 img = goldi.copy()
@@ -139,6 +139,10 @@ def sobel(img):
     grad_y = np.zeros((height,width,3), np.uint8)
     new_image = np.zeros((height,width,3), np.uint8)
 
+    blur_kernel = 0.1 * np.array([[1, 1, 1],
+                                  [1, 2, 1],
+                                  [1, 1, 1]])
+    
     kernel_x = np.array([[-1, 0, 1],
                         [-2, 0, 2],
                         [-1, 0, 1]])
@@ -149,7 +153,9 @@ def sobel(img):
             grad_x[i,j] = convolution(kernel_x, gray, i, j)
             grad_y[i,j] = convolution(kernel_y, gray, i, j)
             new_image[i,j] = 0.5 * grad_x[i,j] + 0.5 * grad_y[i,j]
-
+    
+    # abs_grad_x = cv.convertScaleAbs(grad_x)
+    # abs_grad_y = cv.convertScaleAbs(grad_y)
     # new_image = cv.addWeighted(grad_x, 0.5, grad_y, 0.5, 0)
     return new_image
 
