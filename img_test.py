@@ -131,27 +131,29 @@ def convolution(kernel, img, i, j):
             # print(f"result = {result}\n")
     return result if (result > 0) else -result
 
-height = img.shape[0]
-width = img.shape[1]
+def sobel(img):
+    height = img.shape[0]
+    width = img.shape[1]
 
-grad_x = np.zeros((height,width,3), np.uint8)
-grad_y = np.zeros((height,width,3), np.uint8)
-new_image = np.zeros((height,width,3), np.uint8)
+    grad_x = np.zeros((height,width,3), np.uint8)
+    grad_y = np.zeros((height,width,3), np.uint8)
+    new_image = np.zeros((height,width,3), np.uint8)
 
-kernel_x = np.array([[-1, 0, 1],
-                     [-2, 0, 2],
-                     [-1, 0, 1]])
-kernel_y = -kernel_x.transpose()
+    kernel_x = np.array([[-1, 0, 1],
+                        [-2, 0, 2],
+                        [-1, 0, 1]])
+    kernel_y = -kernel_x.transpose()
 
-for i in range(height):
-    for j in range(width):
-        grad_x[i,j] = convolution(kernel_x, gray, i, j)
-        grad_y[i,j] = convolution(kernel_y, gray, i, j)
-        new_image[i,j] = 0.5 * grad_x[i,j] + 0.5 * grad_y[i,j]
+    for i in range(height):
+        for j in range(width):
+            grad_x[i,j] = convolution(kernel_x, gray, i, j)
+            grad_y[i,j] = convolution(kernel_y, gray, i, j)
+            new_image[i,j] = 0.5 * grad_x[i,j] + 0.5 * grad_y[i,j]
 
-# new_image = cv.addWeighted(grad_x, 0.5, grad_y, 0.5, 0)
+    # new_image = cv.addWeighted(grad_x, 0.5, grad_y, 0.5, 0)
+    return new_image
 
-cv.imshow('final', new_image)
+cv.imshow('final', sobel(img))
 cv.waitKey(0)
 
 # TODO:
