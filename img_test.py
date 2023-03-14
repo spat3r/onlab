@@ -131,20 +131,22 @@ def convolution(kernel, img, i, j):
 height = img.shape[0]
 width = img.shape[1]
 
-test_kernel = 0.7
+grad_x = np.zeros((height,width,3), np.uint8)
+grad_y = np.zeros((height,width,3), np.uint8)
 new_image = np.zeros((height,width,3), np.uint8)
-grad_x = cv.Sobel(gray, cv.CV_16S, 1, 0, ksize=3, scale=1, delta=0, borderType=cv.BORDER_DEFAULT)
 
-print(kernel)
-cv.waitKey(0)
-
+kernel_x = np.array([[-1, 0, 1],
+                     [-2, 0, 2],
+                     [-1, 0, 1]])
+kernel_y = -kernel_x.transpose()
 
 for i in range(height):
     for j in range(width):
-        new_image[i,j] = convolution(kernel, gray, i, j)
+        grad_x[i,j] = convolution(kernel_x, gray, i, j)
+        grad_y[i,j] = convolution(kernel_y, gray, i, j)
+        new_image[i,j] = 0.5 * grad_x[i,j] + 0.5 * grad_y[i,j]
 
 cv.imshow('final', new_image)
-cv.imshow('cvfinal', grad_x)
 cv.waitKey(0)
 
 # TODO:
