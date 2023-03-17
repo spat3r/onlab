@@ -38,8 +38,10 @@ def convolution(kernel, img, i, j):
 
     for k in range(kh):
         for l in range(kw):
-            result += (img[i+k-1,j+l-1] * kernel[k, l]) if (i%h and j%w) else 0
-    return result if (result >= 0) else -result
+            if ( (i+k-1)>0 and (j+l-1)>0 and (i+k-1)<h and (j+l-1)<w ):
+                result += (img[i+k-1,j+l-1] * kernel[k, l])
+    result = math.fabs(result)
+    return result if (result < 255) else 255
 
 def sobel(img):
     height = img.shape[0]
