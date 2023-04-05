@@ -11,25 +11,115 @@
 // }
 
 
-{ signal: [
-	{ name: "Row cycle",   	wave: "1..................1"},
-	{ name: "RGB Data",   	wave: "2x.................2"},
-	{ name: "HSYNCH",     	wave: "0...1.....0.........",
-				node: ".a..b.....c........d"},
-	{ name: "Sobel_calc", 	wave: "01.................0",
-				node: ".g.................h"},
-        {},
-        {},
-        { name: "RGB2GRAY",   	wave: "01..0..............."},
-        { name: "GBLUR",   	wave: "0...1.....0........."},
-        { name: "SOBEL",   	wave: "0.........1.......0."},
-        { name: "output_rdy",  	wave: "0.................1."},
-        { name: "HSYNCH",     	wave: "0...1.....0.........",
-                                node: ".a..b.....c........d"},
-        {},
-        { name: "SQUENCER[3:0]",wave: "74..3.....5.......61", data: "1'b0 1'b1 1'b2 1'b4 1'b8"},
-        { name: "store_enable", wave: "10................10"}
+// { signal: [
+// 	{ name: "Row cycle",   	wave: "1..................1"},
+// 	{ name: "RGB Data",   	wave: "2x.................2"},
+// 	{ name: "HSYNCH",     	wave: "0...1.....0.........",
+// 				node: ".a..b.....c........d"},
+// 	{ name: "Sobel_calc", 	wave: "01..................",
+// 				node: ".g.................h"},
+//         {},
+//         {},
+//         { name: "RGB2GRAY",   	wave: "01..0..............."},
+//         { name: "GBLUR",   	wave: "0...1.....0........."},
+//         { name: "SOBEL",   	wave: "0.........1.......0."},
+//         { name: "output_rdy",  	wave: "0.................1."},
+//         { name: "HSYNCH",     	wave: "0...1.....0.........",
+//                                 node: ".a..b.....c........d"},
+//         {},
+//         { name: "SQUENCER[3:0]",wave: "74..3.....5.......61", data: "1'b0 1'b1 1'b2 1'b4 1'b8"},
+//         { name: "store_enable", wave: "10................10"}
         
-],
-  edge: [ "a~b 80", "b~c 152", "c~d 232", "g~h 464"]
-}
+// ],
+//   edge: [ "a~b 80", "b~c 152", "c~d 232", "g~h 464"]
+// }
+
+{ signal: [
+  	// { name: "Row cycle",   	wave: "1..................1"},
+  	// { name: "RGB Data",   	wave: "2x.................2"},
+  	// { name: "HSYNCH",     	wave: "0...1.....0.........",
+  	// 			                  node: ".a..b.....c........d"},
+  	// { name: "Sobel_calc", 	wave: "01..................",
+  	// 			                  node: ".g.................h"},
+    // {},
+    // {},
+    // { name: "sobel_ff_1",   wave: "222|333XXX2|X", data:"0 1 2 n-1 n n+1"},
+    // { name: "sobel_ff_3",   wave: "222|333XXX2|X", data:"0 1 2 n-1 n n+1"},
+    // { name: "sobel_ff_2",   wave: "222|333XXX2|X", data:"0 1 2 n-1 n n+1"},
+    // { name: "blur_ff_1",  	wave: "222|222444X|X", data:"0 1 2 n-1 n n+1 n-1 n n+1"},
+    // { name: "blur_ff_2",    wave: "222|222444X|X", data:"0 1 2 n-1 n n+1 n-1 n n+1"},
+    // { name: "blur_ff_3",    wave: "222|222444X|X", data:"0 1 2 n-1 n n+1 n-1 n n+1"},
+    // { name: "tx_data_x+3sor",     	wave: "222|2222226|X", data:"0 1 2 "},
+    // {},
+    // {},
+    // { name: "line_n-4",  wave: "222|33322222|X", data:""},
+    // { name: "line_n-3",  wave: "222|33322222|X", data:""},
+    // { name: "line_n-2",  wave: "222|333444XX|X", data:""},
+    // { name: "line_n-1",  wave: "222|222444XX|X", data:""},
+    // { name: "line_n",    wave: "222|2224446X|X", data:""},
+
+
+
+    // {},
+    // { name:"Egy pixel útja"},
+    // { name: "rx_data",        wave: "022|262|220.|.|.", data:"1 2 x P x+2 1599 1600"},
+    // { name: "rx_dv",          wave: "01.|...|...0|.|.", data:""},
+    // { name: "rx_hsync",       wave: "0..|...|....|1|0", data:""},
+    // { name: "grayed_pixel",   wave: "0.2|2272|220|.|.", data:"1 x-1 x P x+2 1599 1600"},
+    // {},
+    // { name: "rx_data",        wave: "0|22|222|20.|.|.", data:"1601 1602___ y y+1 y+2 3200 3201___"},
+    // { name: "rx_dv",          wave: "0|1.|...|.0.|.|.", data:""},
+    // { name: "rx_hsync",       wave: "0|..|...|...|1|0", data:""},
+    // { name: "grayed_pixel",   wave: "0|.2|222|220|.|.", data:"1601___ y-1 y y+1 3199 3200"},
+    // {},
+    // { name: "rx_data",        wave: "0|22|222|20.|.|.", data:"3201 3202___ z z+1 z+2 4800 4801___"},
+    // { name: "rx_dv",          wave: "0|1.|...|.0.|.|.", data:""},
+    // { name: "rx_hsync",       wave: "0|..|...|...|1|0", data:""},
+    // { name: "grayed_pixel",   wave: "0|.2|222|220|.|.", data:"3201___ z-1 z z+1 4799 4800"},
+
+
+    // { name: "rx_data",            wave: "022|262|220.|.|.|22|222|20.|.|.|22|222|20.|.|.", data:"1 2 x P x+2 1599 1600 1601 1602___ y y+1 y+2 3200 3201___ 3201 3202___ z z+1 z+2 4800 4801___"},
+    // { name: "rx_dv",              wave: "01.|.......0|.|.|1.|.....0.|.|.|1.|...|.0.|.|.", data:""},
+    // { name: "rx_hsync",           wave: "0..|........|1|0|..|.......|1|0|..|...|...|1|0", data:""},
+    // {},
+    // { name: "gray pixel",         wave: "0.2|2272|220|.|.|.2|222|220|.|.|.2|222|220|.|.", data:"1 x-1 x P x+2 1599 1600 1601___ y-1 y y+1 3199 3200 3201___ z-1 z z+1 4799 4800"},
+    // {},
+    // { name: "gp_mem_1 stored",    wave: "0.2|2272|220|.|.|..|...|...|.|.|..|...|...|.|.", data:"1 x-1 x P x+2 1599 1600"},
+    // { name: "gp_mem_2 stored",    wave: "0..|....|...|.|.|.2|222|220|.|.|..|...|...|.|.", data:"1601___ y-1 y y+1 3199 3200"},
+    // { name: "gp_mem_3 stored",    wave: "0..|....|...|.|.|..|...|...|.|.|.2|222|220|.|.", data:"3201___ z-1 z z+1 4799 4800"},
+    // {},
+    // { name:"blurring"},
+    // { name: "rx_data",     wave: "2|22222|", data:"X j2k3 j3k3 X X X"},
+    // { name: "gp_mem_1",      wave: "2|22222|", data:"X j1k1 j2k1 j3k1 X X X "},
+    // { name: "gp_mem_2",      wave: "2|24222|", data:"X j1k2 j2k2 j3k2 X X X "},
+    // { name: "gp_mem_3",      wave: "2|22222|", data:"X j1k3 j2k3 j3k3 X X X "},
+    // {},
+    // { name: "dsp_layer",   wave: "2|22252|", data:"X X X X prod. X X"},
+    // { name: "add_layer",   wave: "2|22229|", data:"X X X X X sum___ X"},
+
+    // { name:"sobel"},
+    // { name: "gp_mem_1",      wave: "2|22222|", data:"X j1k1 j2k1 j3k1 X X X "},
+    // { name: "gp_mem_2",      wave: "2|24222|", data:"X j1k2 j2k2 j3k2 X X X "},
+    // { name: "gp_mem_3",      wave: "2|22222|", data:"X j1k3 j2k3 j3k3 X X X "},
+    // {},
+    // { name: "dsp_layer",   wave: "2|22252|", data:"X X X X prod. X X"},
+    // { name: "add_layer",   wave: "2|22229|", data:"X X X X X sum___ X"},
+
+    
+    { name:"pipeline"},
+    { name: "rx_data",           wave: "2|2322222222|", data:"X X xy X X X X X X X X"},
+    { name: "gp_mem data out",   wave: "2|2242222222|", data:"X X X xy X X X X X X X", node:".....a....."},
+    {},
+    { name: "blurring",          wave: "2|2222522222|", data:"X X X X X xy-1 X X X X X", node:"......b....."},
+    { name: "blur_mem data out", wave: "2|2222262222|", data:"X X X X X X xy-1 X X X X",  node:"........c....."},
+    {},
+    { name: "sobel",             wave: "2|2222222722|", data:"X X X X X X X X xy-2 X X", node:".........d....."},
+    { name: "ty_data",           wave: "2|2222222282|", data:"X X X X X X X X X xy-2 X"},
+
+    // { name: "SQUENCER[3:0]",wave: "74..3.....5.......61", data: "1'b0 1'b1 1'b2 1'b4 1'b8"},
+    // { name: "store_enable", wave: "10................10"}
+          
+  ],
+    edge: [ "a~b 80", "b~c 152", "c~d 232", "g~h 464"],
+    config: {skin:'default'}
+  }
