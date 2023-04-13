@@ -13,12 +13,23 @@ except IOError:
     pass
 
 try: 
-    goldi  = cv.imread("test_pic.jpg",1) 
+    goldi  = cv.imread("goldi.jpg",1) 
 except IOError:
     pass
 
 
 def rgb2gray(img):
+    height = img.shape[0]
+    width = img.shape[1]
+    Y = np.zeros((height,width), np.uint8)
+    print(Y.shape)
+
+    for i in range(height):
+        for j in range(width):
+            Y[i,j] = 0.28125 * img[i,j][0] + 0.5625 * img[i,j][1] + 0.1171875 * img[i,j][2] 
+    return Y
+
+def rgb2gray_bit(img):
     height = img.shape[0]
     width = img.shape[1]
     Y = np.zeros((height,width), np.uint8)
@@ -43,7 +54,34 @@ def convolution(kernel, img, i, j):
     result = math.fabs(result)
     return result if (result < 255) else 255
 
-def sobel(img):
+def sobel_bit(img):
+    height = img.shape[0]
+    width = img.shape[1]
+
+    blur_kernel = 0.09375 * np.array([[1, 1, 1],
+                                      [1, 2, 1],
+                                      [1, 1, 1]])
+    kernel_x = np.array([[-1, 0, 1],
+                        [-2, 0, 2],
+                        [-1, 0, 1]])
+    kernel_y = -kernel_x.transpose()
+
+    gb =  np.zeros((height,width), np.uint8)
+    new_image = np.zeros((height,width), np.uint8)
+
+    gray = rgb2gray_bit(img)
+
+    for i in range(height):
+        for j in range(width):
+            gb[i,j] = convolution(blur_kernel, gray, i, j)
+
+    for i in range(height):
+        for j in range(width):
+            new_image[i,j] = 0.5 * convolution(kernel_x, gray, i, j) + 0.5 * convolution(kernel_y, gray, i, j)
+
+    return new_image
+
+def sobel_my(img):
     height = img.shape[0]
     width = img.shape[1]
 
@@ -56,7 +94,7 @@ def sobel(img):
     kernel_y = -kernel_x.transpose()
 
     gb =  np.zeros((height,width,3), np.uint8)
-    new_image = np.zeros((height,width,3), np.uint8)
+    new_image = np.zeros((height,width), np.uint8)
 
     gray = rgb2gray(img)
 
@@ -94,9 +132,32 @@ def sobel_net(img):
     return grad
 
 cv.imshow('startpick', goldi)
-cv.imshow('my_sobel', sobel(goldi))
-cv.imshow('net_sobel', sobel_net(goldi))
+goldi_bit = sobel_bit(goldi)
+cv.imshow('goldi_bit', goldi_bit)
+goldi_net = sobel_net(goldi)
+cv.imshow('goldi_net', goldi_net)
+goldi_my = sobel_my(goldi)
+cv.imshow('goldi_my', goldi_my)
 
+height = goldi.shape[0]
+width = goldi.shape[1]
+
+print(height, width)
+
+diff_net_my =  np.zeros((height,width), np.uint8)
+diff_my_bit =  np.zeros((height,width), np.uint8)
+diff_my_bit_5x =  np.zeros((height,width), np.uint8)
+
+for i in range(height):
+    for j in range(width):
+        diff_net_my[i,j] = (goldi_net[i,j] - goldi_my[i,j]) if (goldi_net[i,j] > goldi_my[i,j]) else (goldi_my[i,j] - goldi_net[i,j])
+        diff_my_bit[i,j] = (goldi_my[i,j] - goldi_bit[i,j]) if (goldi_my[i,j] > goldi_bit[i,j]) else (goldi_bit[i,j] - goldi_my[i,j])
+        diff_my_bit_5x[i,j] = diff_my_bit[i,j]*200
+
+
+cv.imshow('diff_net_my', diff_net_my)
+cv.imshow('diff_my_bit', diff_my_bit)
+cv.imshow('diff_my_bit_5x', diff_my_bit_5x)
 
 cv.waitKey(0)
 
