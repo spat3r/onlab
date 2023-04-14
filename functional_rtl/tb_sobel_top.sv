@@ -8,7 +8,7 @@ parameter POWEREFF = 2;
 reg         clk =1;
 reg         rst =1;
 wire [23:0] rgb_i;
-wire [7:0]  sobel_o;
+wire [23:0]  rgb_o;
 wire        dv_i;
 wire        hs_i;
 wire        vs_i;
@@ -31,6 +31,12 @@ sobel_top #(
         .rst(rst),
         .rgb_i(rgb_i),
         .sobel_o(sobel_o),
+        .red_i(rgb_i [23:16]),
+        .green_i(rgb_i [15:8]),
+        .blue_i(rgb_i [7:0]),
+        .red_o(rgb_o [23:16]),
+        .green_o(rgb_o [15:8]),
+        .blue_o(rgb_o [7:0]),
         .dv_i(dv_i),
         .hs_i(hs_i),
         .vs_i(vs_i),
