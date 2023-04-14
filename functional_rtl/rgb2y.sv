@@ -51,22 +51,25 @@ module rgb2y #(
  wire [7:0] gamma;
  reg  [7:0] gamma_ff;
  reg        dv_ff2;
- reg        dv_posedge;
+ wire       dv_posedge;
+ reg        dv_posedge_ff;
  reg        vs_ff2;
  reg        hs_ff2;
- assign gamma = r_mul + g_mul + b_mul;
- 
+
+ assign gamma = dv_ff1 ? (r_mul + g_mul + b_mul) : 7'b0;
+ assign dv_posedge = dv_i & ~dv_ff1;
+
  always @(posedge clk ) begin
     if (rst) begin
         gamma_ff <= 0;
         dv_ff2 <= 0;
-        dv_posedge <= 0;
+        dv_posedge_ff <= 0;
         vs_ff2 <= 0;
         hs_ff2 <= 0;
     end else begin
         gamma_ff <= gamma;
         dv_ff2 <= dv_ff1;
-        dv_posedge <= dv_i & ~dv_ff1;
+        dv_posedge_ff <= dv_posedge;
         vs_ff2 <= vs_ff1;
         hs_ff2 <= hs_ff1;
     end
@@ -74,7 +77,7 @@ module rgb2y #(
 
  assign gamma_o = gamma_ff;
  assign dv_o = dv_ff2;
- assign line_end = dv_posedge;
+ assign line_end = dv_posedge_ff;
  assign vs_o = vs_ff2;
  assign hs_o = vs_ff2;
     
