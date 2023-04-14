@@ -1,7 +1,8 @@
 module buffer #(
     parameter COLORDEPTH = 8,
     parameter SCREENWIDTH = 1600,
-    parameter LINE_END = 2048
+    parameter LINE_END = 2048,
+    parameter BUF_DEPTH = 3
 ) (
     input  wire                  clk,
     input  wire                  rst,
@@ -13,9 +14,7 @@ module buffer #(
     output wire                  dv_o,
     // output reg                   hs_o,
     // output reg                   vs_o,
-    output wire [COLORDEPTH-1:0] px_line_n2_o,
-    output wire [COLORDEPTH-1:0] px_line_n1_o,
-    output wire [COLORDEPTH-1:0] px_line_n0_o
+    output wire [BUF_DEPTH*COLORDEPTH-1:0] buff_o
     
 );
 
@@ -43,7 +42,7 @@ end
 //**************************
 //*                        *
 //**************************
-assign px_line_n0_o = data_i;
+assign buff_o[COLORDEPTH-1:0] = data_i;
 assign dv_o = dv_ff1;
 // assign hs_o = hs_ff1;
 // assign vs_o = vs_ff1;
@@ -52,38 +51,25 @@ assign dv_o = dv_ff1;
 //**************************
 //*                        *
 //**************************
-wire [COLORDEPTH-1:0] din1;
-reg  [COLORDEPTH-1:0] memory1 [SCREENWIDTH-1:0];
-wire [COLORDEPTH-1:0] dout1;
+genvar k;
+generate
+    for (k = 1; k < BUF_DEPTH; k = k + 1) begin
+        wire [COLORDEPTH-1:0] din_k;
+        reg  [COLORDEPTH-1:0] memory_k [SCREENWIDTH-1:0];
+        wire [COLORDEPTH-1:0] dout_k;
 
-assign din1 = data_i;
+        assign din_k = buff_o[k*COLORDEPTH-1:(k-1)*COLORDEPTH];
 
-//async dualp memory line n-1
-always @ (posedge clk)
-    if (en)
-        if(we)
-            memory1[addr] <= din1;
+        //async dualp memory line n-1
+        always @ (posedge clk)
+            if (en)
+                if(we)
+                    memory_k[addr] <= din_k;
 
-assign dout1 = memory1[addr];
-assign px_line_n1_o = dout1;
+        assign dout_k = memory_k[addr];
+        assign buff_o[(k+1)*COLORDEPTH-1:(k)*COLORDEPTH] = dout_k;
+    end
+endgenerate
 
-//**************************
-//*                        *
-//**************************
-wire [COLORDEPTH-1:0] din2;
-reg  [COLORDEPTH-1:0] memory2 [SCREENWIDTH-1:0];
-reg  [COLORDEPTH-1:0] dout2;
-
-assign din2 = dout1;
-
-//async dualp memory line n-2
-always @ (posedge clk)
-    if (en)
-        if(we)
-            memory2[addr] <= din2;
-
-
-assign dout2 = memory2[addr];
-assign px_line_n2_o = dout2;
 
 endmodule
