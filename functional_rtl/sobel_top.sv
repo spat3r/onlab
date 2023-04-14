@@ -23,9 +23,9 @@ wire [7:0] gamma_o;
 
 wire dv_rgb_o;
 wire line_end;
-wire px_line_n2_o;
-wire px_line_n1_o;
-wire px_line_n0_o;
+wire [7:0] gb_line_n2_o;
+wire [7:0] gb_line_n1_o;
+wire [7:0] gb_line_n0_o;
 
 rgb2y #(
     .COLORDEPTH(8)
@@ -51,21 +51,24 @@ buffer #(
     .data_i         (gamma_o),
     .dv_i           (dv_rgb_o),
     .line_end       (line_end),
-    // .dv_o           (dv_o),
-    .px_line_n2_o   (px_line_n2_o),
-    .px_line_n1_o   (px_line_n1_o),
-    .px_line_n0_o   (px_line_n0_o)
+    .dv_o           (dv_gb_o),
+    .px_line_n2_o   (gb_line_n2_o),
+    .px_line_n1_o   (gb_line_n1_o),
+    .px_line_n0_o   (gb_line_n0_o)
 );
 
-
+reg [3:0] hs_shr, vs_shr;
+assign dv_out = dv_gb_o;
 always @ ( posedge clk )
 begin
-   dv_o    <= dv_i;
-   hs_o    <= hs_i;
-   vs_o    <= vs_i;
-   red_o   <= gamma_o;
-   green_o <= gamma_o;
-   blue_o  <= gamma_o;
+   dv_o    <= dv_out;
+   hs_shr <= {hs_shr[2:0], hs_i};
+   vs_shr <= {vs_shr[2:0], vs_i};
+   hs_o    <= hs_shr[2];
+   vs_o    <= vs_shr[2];
+   red_o   <= dv_out ? gb_line_n2_o : 8'b0;
+   green_o <= dv_out ? gb_line_n2_o : 8'b0;
+   blue_o  <= dv_out ? gb_line_n2_o : 8'b0;
 end
 
 
