@@ -33,11 +33,7 @@ rgb2y #(
     .rgb_i(rgb_i),
     .gamma_o(gamma_o),
     .dv_i(dv_i),
-    // .hs_i(hs_i),
-    // .vs_i(vs_i),
     .dv_o(dv_rgb_o),
-    // .hs_o(hs_o),
-    // .vs_o(vs_o),
     .line_end(line_end)
 );
 
