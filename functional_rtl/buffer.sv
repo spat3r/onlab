@@ -10,7 +10,7 @@ module buffer #(
     input  wire                  line_end,
     input  wire                  dv_i,
     output wire                  dv_o,
-    output wire [BUF_DEPTH*COLORDEPTH-1:0] buff_o
+    output wire [COLORDEPTH-1:0] buff_o [BUF_DEPTH-1:0]
     
 );
 
@@ -32,7 +32,7 @@ end
 //**************************
 //*                        *
 //**************************
-assign buff_o[COLORDEPTH-1:0] = data_i;
+assign buff_o[0] = data_i;
 assign dv_o = dv_ff1;
 
 
@@ -55,7 +55,7 @@ generate
                     memory_k[addr] <= din_k;
 
         assign dout_k = memory_k[addr];
-        assign buff_o[(k+1)*COLORDEPTH-1:(k)*COLORDEPTH] = dout_k;
+        assign buff_o[k] = dout_k;
     end
 endgenerate
 
