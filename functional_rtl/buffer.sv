@@ -32,7 +32,11 @@ end
 //**************************
 //*                        *
 //**************************
-assign buff_o[0] = data_i;
+reg [COLORDEPTH-1:0] dout_0;
+always @ (posedge clk)
+    dout_0 <= data_i;
+
+assign buff_o[0] = dout_0;
 assign dv_o = dv_ff1;
 
 
@@ -44,17 +48,17 @@ generate
     for (k = 1; k < BUF_DEPTH; k = k + 1) begin
         wire [COLORDEPTH-1:0] din_k;
         reg  [COLORDEPTH-1:0] memory_k [SCREENWIDTH-1:0];
-        wire [COLORDEPTH-1:0] dout_k;
+        reg  [COLORDEPTH-1:0] dout_k;
 
         assign din_k = buff_o[k*COLORDEPTH-1:(k-1)*COLORDEPTH];
 
-        //async dualp memory line n-1
+        //sync dualp memory line n-1
         always @ (posedge clk)
             if (en)
                 if(we)
                     memory_k[addr] <= din_k;
+                dout_k <= memory_k[addr];
 
-        assign dout_k = memory_k[addr];
         assign buff_o[k] = dout_k;
     end
 endgenerate
