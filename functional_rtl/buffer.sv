@@ -10,14 +10,13 @@ module buffer #(
     input  wire                  line_end,
     input  wire                  dv_i,
     output wire                  dv_o,
-    output wire [BUF_DEPTH*COLORDEPTH-1:0] buff_o
+    output wire [COLORDEPTH-1:0] buff_o [BUF_DEPTH-1:0]
     
 );
 
 reg [10:0] addr;
 reg dv_ff1;
-assign en = 1'b1;
-assign we = dv_i;
+
 
 always @(posedge clk) begin
     if (rst || line_end) begin
@@ -32,9 +31,14 @@ end
 //**************************
 //*                        *
 //**************************
-assign buff_o[COLORDEPTH-1:0] = data_i;
-assign dv_o = dv_ff1;
+reg [COLORDEPTH-1:0] dout_0;
+always @ (posedge clk)
+    dout_0 <= data_i;
 
+assign buff_o[0] = dout_0;
+assign dv_o = dv_ff1;
+assign en = 1'b1;
+assign we = dv_ff1;
 
 //**************************
 //*                        *
@@ -44,18 +48,19 @@ generate
     for (k = 1; k < BUF_DEPTH; k = k + 1) begin
         wire [COLORDEPTH-1:0] din_k;
         reg  [COLORDEPTH-1:0] memory_k [SCREENWIDTH-1:0];
-        wire [COLORDEPTH-1:0] dout_k;
+        reg  [COLORDEPTH-1:0] dout_k;
 
-        assign din_k = buff_o[k*COLORDEPTH-1:(k-1)*COLORDEPTH];
+        assign din_k = buff_o[(k-1)];
 
-        //async dualp memory line n-1
+        //sync dualp memory line n-1
         always @ (posedge clk)
-            if (en)
+            if (en) begin
                 if(we)
-                    memory_k[addr] <= din_k;
+                    memory_k[addr-1'b1] <= din_k;
+                dout_k <= memory_k[addr];
+            end
 
-        assign dout_k = memory_k[addr];
-        assign buff_o[(k+1)*COLORDEPTH-1:(k)*COLORDEPTH] = dout_k;
+        assign buff_o[k] = dout_k;
     end
 endgenerate
 
