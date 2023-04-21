@@ -16,8 +16,7 @@ module buffer #(
 
 reg [10:0] addr;
 reg dv_ff1;
-assign en = 1'b1;
-assign we = dv_i;
+
 
 always @(posedge clk) begin
     if (rst || line_end) begin
@@ -38,7 +37,8 @@ always @ (posedge clk)
 
 assign buff_o[0] = dout_0;
 assign dv_o = dv_ff1;
-
+assign en = 1'b1;
+assign we = dv_ff1;
 
 //**************************
 //*                        *
@@ -56,7 +56,7 @@ generate
         always @ (posedge clk)
             if (en)
                 if(we)
-                    memory_k[addr] <= din_k;
+                    memory_k[addr-1'b1] <= din_k;
                 dout_k <= memory_k[addr];
 
         assign buff_o[k] = dout_k;
