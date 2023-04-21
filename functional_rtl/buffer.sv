@@ -50,7 +50,7 @@ generate
         reg  [COLORDEPTH-1:0] memory_k [SCREENWIDTH-1:0];
         reg  [COLORDEPTH-1:0] dout_k;
 
-        assign din_k = buff_o[k*COLORDEPTH-1:(k-1)*COLORDEPTH];
+        assign din_k = buff_o[(k-1)];
 
         //sync dualp memory line n-1
         always @ (posedge clk)
