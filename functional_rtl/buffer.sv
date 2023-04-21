@@ -54,10 +54,11 @@ generate
 
         //sync dualp memory line n-1
         always @ (posedge clk)
-            if (en)
+            if (en) begin
                 if(we)
                     memory_k[addr-1'b1] <= din_k;
                 dout_k <= memory_k[addr];
+            end
 
         assign buff_o[k] = dout_k;
     end
