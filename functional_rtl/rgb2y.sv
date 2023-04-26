@@ -40,10 +40,10 @@ module rgb2y #(
     end
     
     logic[7:0] gamma_d;
-    assign gamma = (r_mul_q + g_mul_q + b_mul_q);
+    assign gamma_d = (r_mul_q + g_mul_q + b_mul_q);
     //data route, no need for any reset
     always @(posedge clk ) begin
-        gamma_o <= gamma;
+        gamma_o <= gamma_d;
     end
 
     logic [1:0] dv_shr;
@@ -61,9 +61,9 @@ module rgb2y #(
             hs_shr <= {hs_shr[0],hs_i};
             vs_shr <= {vs_shr[0],vs_i};
             line_end_o <= line_end_d;
-            dv_o <= dv_shr[1];
-            hs_o <= hs_shr[1];
-            vs_o <= vs_shr[1];
+            dv_o <= dv_shr[0];
+            hs_o <= hs_shr[0];
+            vs_o <= vs_shr[0];
         end
     end
 
