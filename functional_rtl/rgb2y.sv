@@ -22,7 +22,7 @@ module rgb2y #(
     assign r = rgb_i [23:16];
     assign g = rgb_i [15:8];
     assign b = rgb_i [7:0];
-    
+
     assign r_mul_d = (r >> 2) + (r >> 5);
     assign g_mul_d = (g >> 1) + (g >> 4);
     assign b_mul_d = (b >> 4) + (b >> 5); // + (b >> 6) + (b >> 7);
@@ -39,37 +39,33 @@ module rgb2y #(
         end
     end
 
- wire [7:0] gamma;
- reg  [7:0] gamma_ff;
- reg        dv_ff2;
- wire       dv_posedge;
- reg        dv_posedge_ff;
- reg        vs_ff2;
- reg        hs_ff2;
-
- assign gamma = dv_ff1 ? (r_mul + g_mul + b_mul) : 7'b0;
- assign dv_posedge = dv_i & ~dv_ff1;
-
- always @(posedge clk ) begin
-    if (rst) begin
-        gamma_ff <= 0;
-        dv_ff2 <= 0;
-        dv_posedge_ff <= 0;
-        vs_ff2 <= 0;
-        hs_ff2 <= 0;
-    end else begin
-        gamma_ff <= gamma;
-        dv_ff2 <= dv_ff1;
-        dv_posedge_ff <= dv_posedge;
-        vs_ff2 <= vs_ff1;
-        hs_ff2 <= hs_ff1;
-    end
- end
-
- assign gamma_o = gamma_ff;
- assign dv_o = dv_ff2;
- assign line_end = dv_posedge_ff;
- assign vs_o = vs_ff2;
- assign hs_o = vs_ff2;
+    logic[7:0] gamma_d;
     
+    assign gamma = dv_q1 ? (r_mul + g_mul + b_mul) : 7'b0;
+    assign dv_posedge = dv_i & ~dv_q1;
+    
+    //data route, no need for any reset
+    always @(posedge clk ) begin
+        gamma_o <= gamma;
+    end
+
+    logic [1:0] dv_shr;
+    logic [1:0] hs_shr;
+    logic [1:0] vs_shr;
+
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            dv_shr <= 0;
+            hs_shr <= 0;
+            vs_shr <= 0;
+        end else begin
+            dv_shr <= {dv_shr[0],dv_i};
+            hs_shr <= {hs_shr[0],hs_i};
+            vs_shr <= {vs_shr[0],vs_i};
+            dv_o <= dv_shr[1];
+            hs_o <= hs_shr[1];
+            vs_o <= vs_shr[1];
+        end
+    end
+
 endmodule
