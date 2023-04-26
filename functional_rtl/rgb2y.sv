@@ -1,7 +1,7 @@
 module rgb2y #(
     parameter COLORDEPTH = 8,
     parameter POWEREFF = 2
-) (
+    ) (
     input  logic       clk,
     input  logic       rst,
     input  logic[23:0] rgb_i,
@@ -15,12 +15,9 @@ module rgb2y #(
     output logic       line_end
     );
 
- wire [7:0] r, g, b;
- wire [7:0] r_mul, g_mul, b_mul;
- reg  [7:0] r_mul_ff, g_mul_ff, b_mul_ff;
- reg        dv_ff1;
- reg        hs_ff1;
- reg        vs_ff1;
+    logic[7:0] r, g, b;
+    logic[7:0] r_mul_d, g_mul_d, b_mul_d;
+    logic[7:0] r_mul_q, g_mul_q, b_mul_q;
 
  assign r = rgb_i [23:16];
  assign g = rgb_i [15:8];
