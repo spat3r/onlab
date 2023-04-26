@@ -2,18 +2,18 @@ module rgb2y #(
     parameter COLORDEPTH = 8,
     parameter POWEREFF = 2
 ) (
-    input  wire        clk,
-    input  wire        rst,
-    input  wire [23:0] rgb_i,
-    output wire [7:0]  gamma_o,
-    input  wire        dv_i,
-    input  wire        hs_i,
-    input  wire        vs_i,
-    output wire        dv_o,
-    output wire        hs_o,
-    output wire        vs_o,
-    output wire        line_end
-);
+    input  logic       clk,
+    input  logic       rst,
+    input  logic[23:0] rgb_i,
+    output logic[7:0]  gamma_o,
+    input  logic       dv_i,
+    input  logic       hs_i,
+    input  logic       vs_i,
+    output logic       dv_o,
+    output logic       hs_o,
+    output logic       vs_o,
+    output logic       line_end
+    );
 
  wire [7:0] r, g, b;
  wire [7:0] r_mul, g_mul, b_mul;
