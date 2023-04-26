@@ -29,13 +29,10 @@ module rgb2y #(
     
     always @(posedge clk ) begin
         if (rst) begin
-        r_mul_ff <= 0;
-        g_mul_ff <= 0;
-        b_mul_ff <= 0;
-        dv_ff1 <= 0;
-        hs_ff1 <= 0;
-        vs_ff1 <= 0;
-    end else begin
+            r_mul_q <= 0;
+            g_mul_q <= 0;
+            b_mul_q <= 0;
+        end else begin
             r_mul_q <= r_mul_d;
             g_mul_q <= g_mul_d;
             b_mul_q <= b_mul_d;
