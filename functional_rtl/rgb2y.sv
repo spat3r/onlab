@@ -36,14 +36,11 @@ module rgb2y #(
         hs_ff1 <= 0;
         vs_ff1 <= 0;
     end else begin
-        r_mul_ff <= r_mul;
-        g_mul_ff <= g_mul;
-        b_mul_ff <= b_mul;
-        dv_ff1 <= dv_i;
-        hs_ff1 <= hs_i;
-        vs_ff1 <= vs_i;
+            r_mul_q <= r_mul_d;
+            g_mul_q <= g_mul_d;
+            b_mul_q <= b_mul_d;
+        end
     end
- end
 
  wire [7:0] gamma;
  reg  [7:0] gamma_ff;
