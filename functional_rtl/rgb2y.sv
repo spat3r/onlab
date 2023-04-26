@@ -19,10 +19,10 @@ module rgb2y #(
     logic[7:0] r_mul_d, g_mul_d, b_mul_d;
     logic[7:0] r_mul_q, g_mul_q, b_mul_q;
 
- assign r = rgb_i [23:16];
- assign g = rgb_i [15:8];
- assign b = rgb_i [7:0];
-
+    assign r = rgb_i [23:16];
+    assign g = rgb_i [15:8];
+    assign b = rgb_i [7:0];
+    
  assign r_mul = (r >> 2) + (r >> 5);
  assign g_mul = (g >> 1) + (g >> 4);
  assign b_mul = (b >> 4) + (b >> 5);// + (b >> 6) + (b >> 7);
