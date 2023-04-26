@@ -23,12 +23,12 @@ module rgb2y #(
     assign g = rgb_i [15:8];
     assign b = rgb_i [7:0];
     
- assign r_mul = (r >> 2) + (r >> 5);
- assign g_mul = (g >> 1) + (g >> 4);
- assign b_mul = (b >> 4) + (b >> 5);// + (b >> 6) + (b >> 7);
-
- always @(posedge clk ) begin
-    if (rst) begin
+    assign r_mul_d = (r >> 2) + (r >> 5);
+    assign g_mul_d = (g >> 1) + (g >> 4);
+    assign b_mul_d = (b >> 4) + (b >> 5); // + (b >> 6) + (b >> 7);
+    
+    always @(posedge clk ) begin
+        if (rst) begin
         r_mul_ff <= 0;
         g_mul_ff <= 0;
         b_mul_ff <= 0;
