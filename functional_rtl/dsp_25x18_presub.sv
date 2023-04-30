@@ -19,7 +19,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 module dsp_25x18_presub #(
-    parameter USE_PCI_REG = 0;
+    parameter USE_PCI_REG = 0
     )(
     input  logic               clk,
     input  logic signed [24:0] a,
@@ -52,7 +52,7 @@ module dsp_25x18_presub #(
 
     assign ad_d = a_q - d_q;
     assign m_d = ad_q * b_q[1];
-    assign p_d = m_q  + USE_PCI_REG ? pci_q : pci;
+    assign p_d = m_q  + (USE_PCI_REG ? pci_q : pci);
 
 
     always_ff @ (posedge clk) begin
