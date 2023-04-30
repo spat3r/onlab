@@ -219,9 +219,9 @@ module rgb2y_3 #(
             hs_shr <= 0;
             vs_shr <= 0;
         end else begin
-            dv_shr <= {dv_shr[0],dv_i};
-            hs_shr <= {hs_shr[0],hs_i};
-            vs_shr <= {vs_shr[0],vs_i};
+            dv_shr <= {dv_shr[3:0],dv_i};
+            hs_shr <= {hs_shr[3:0],hs_i};
+            vs_shr <= {vs_shr[3:0],vs_i};
             line_end_o <= line_end_d;
             dv_o <= dv_shr[4];
             hs_o <= hs_shr[4];
