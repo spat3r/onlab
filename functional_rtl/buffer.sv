@@ -19,11 +19,12 @@ reg dv_ff1;
 
 
 always @(posedge clk) begin
-    if (rst || line_end) begin
+    if (rst) begin
         addr <= 0;
         dv_ff1 <= 0;
     end else begin
-        addr <= addr + 1;
+        if (dv_i & ~line_end) addr <= addr + 1;
+        else                  addr <= 0;
         dv_ff1 <= dv_i;
     end
 end
