@@ -4,19 +4,17 @@ module buffer #(
     parameter LINE_END = 2048,
     parameter BUF_DEPTH = 3
 ) (
-    input  wire                  clk,
-    input  wire                  rst,
-    input  wire [COLORDEPTH-1:0] data_i,
-    input  wire                  line_end,
-    input  wire                  dv_i,
-    output wire                  dv_o,
-    output wire [COLORDEPTH-1:0] buff_o [BUF_DEPTH-1:0]
+    input  logic                  clk,
+    input  logic                  rst,
+    input  logic [COLORDEPTH-1:0] data_i,
+    input  logic                  line_end,
+    input  logic                  dv_i,
+    output logic                  dv_o,
+    output logic [COLORDEPTH-1:0] buff_o [BUF_DEPTH-1:0]
     
 );
 
-reg [10:0] addr;
-reg dv_ff1;
-
+logic [10:0] addr;
 
 always @(posedge clk) begin
     if (rst) begin
@@ -25,18 +23,15 @@ always @(posedge clk) begin
     end else begin
         if (dv_i & ~line_end) addr <= addr + 1;
         else                  addr <= 0;
-        dv_ff1 <= dv_i;
+        dv_o <= dv_i;
     end
 end
 
 //**************************
 //*                        *
 //**************************
-reg [COLORDEPTH-1:0] dout_0;
-always @ (posedge clk)
-    dout_0 <= data_i;
+always @ (posedge clk) buff_o[0] <= data_i;
 
-assign buff_o[0] = dout_0;
 assign dv_o = dv_ff1;
 assign en = 1'b1;
 assign we = dv_ff1;
@@ -47,21 +42,19 @@ assign we = dv_ff1;
 genvar k;
 generate
     for (k = 1; k < BUF_DEPTH; k = k + 1) begin
-        wire [COLORDEPTH-1:0] din_k;
-        reg  [COLORDEPTH-1:0] memory_k [SCREENWIDTH-1:0];
-        reg  [COLORDEPTH-1:0] dout_k;
+        logic [COLORDEPTH-1:0] din_k;
+        logic [COLORDEPTH-1:0] memory_k [SCREENWIDTH-1:0];
+        logic [COLORDEPTH-1:0] dout_k;
 
         assign din_k = buff_o[(k-1)];
 
         //sync dualp memory line n-1
-        always @ (posedge clk)
+        always @ (posedge clk) begin
             if (en) begin
-                if(we)
-                    memory_k[addr-1'b1] <= din_k;
-                dout_k <= memory_k[addr];
+                if (we) memory_k[addr-1'b1] <= din_k;
+                buff_o[k] <= memory_k[addr];
             end
-
-        assign buff_o[k] = dout_k;
+        end
     end
 endgenerate
 
