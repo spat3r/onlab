@@ -68,3 +68,77 @@ module rgb2y #(
     end
 
 endmodule
+
+
+
+// rgb2 to gamma, double 6:3 compressor with dsp
+module rgb2y_2 #(
+    parameter COLORDEPTH = 8,
+    parameter POWEREFF = 2
+    ) (
+    input  logic       clk,
+    input  logic       rst,
+    input  logic[23:0] rgb_i,
+    output logic[7:0]  gamma_o,
+    input  logic       dv_i,
+    input  logic       hs_i,
+    input  logic       vs_i,
+    output logic       dv_o,
+    output logic       hs_o,
+    output logic       vs_o,
+    output logic       line_end_o
+    );
+
+    logic[7:0] r, g, b;
+    logic[7:0] rb_mul_d, g_mul_d;
+    logic[7:0] rb_mul_q, g_mul_q;
+
+    assign r = dv_i ? rgb_i [23:16] : 8'b0;
+    assign g = dv_i ? rgb_i [15:8]  : 8'b0;
+    assign b = dv_i ? rgb_i [7:0]   : 8'b0;
+
+    //  osszesen 6 shiftelt osszeget kell osszeadni mindket esetben
+    //  6:3-as kompresszorral szintetizalhato
+    assign rb_mul_d = r*8'b00110110 + b*8'b00010010 ;
+    assign g_mul_d =  g*8'b10110111;
+
+    always_ff @(posedge clk ) begin
+        if (rst) begin
+            rb_mul_q <= 0;
+            g_mul_q <= 0;
+        end else begin
+            rb_mul_q <= rb_mul_d;
+            g_mul_q <= g_mul_d;
+        end
+    end
+
+    logic[7:0] gamma_d;
+    assign gamma_d = (rb_mul_q + g_mul_q);
+
+    //data route, no need for any reset
+    always @(posedge clk ) begin
+        gamma_o <= gamma_d;
+    end
+
+    logic [1:0] dv_shr;
+    logic [1:0] hs_shr;
+    logic [1:0] vs_shr;
+    wire  line_end_d = dv_shr[0] & ~dv_i;
+
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            dv_shr <= 0;
+            hs_shr <= 0;
+            vs_shr <= 0;
+        end else begin
+            dv_shr <= {dv_shr[0],dv_i};
+            hs_shr <= {hs_shr[0],hs_i};
+            vs_shr <= {vs_shr[0],vs_i};
+            line_end_o <= line_end_d;
+            dv_o <= dv_shr[0];
+            hs_o <= hs_shr[0];
+            vs_o <= vs_shr[0];
+        end
+    end
+
+endmodule
