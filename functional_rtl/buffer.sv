@@ -24,9 +24,11 @@ always @(posedge clk) begin
     if (rst) begin
         addr <= 0;
         dv_o <= 0;
+        vs_o <= 0;
+        hs_o <= 0;
     end else begin
-        if (dv_i & ~line_end) addr <= addr + 1;
-        else                  addr <= 0;
+        if (dv_i) addr <= addr + 1;
+        else      addr <= 0;
         dv_o <= dv_i;
         hs_o <= hs_i;
         if ( ~hs_o & hs_i) vs_o <= vs_i;
@@ -38,7 +40,7 @@ end
 //**************************
 always @ (posedge clk) buff_o[0] <= data_i;
 
-assign en = 1'b1;
+assign en = dv_i | dv_o;
 assign we = dv_o;
 
 //**************************
@@ -49,7 +51,6 @@ generate
     for (k = 1; k < BUF_DEPTH; k = k + 1) begin
         logic [COLORDEPTH-1:0] din_k;
         logic [COLORDEPTH-1:0] memory_k [SCREENWIDTH-1:0];
-        logic [COLORDEPTH-1:0] dout_k;
 
         assign din_k = buff_o[(k-1)];
 
