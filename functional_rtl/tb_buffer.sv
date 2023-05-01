@@ -3,27 +3,13 @@
 module tb_buffer();
 
 parameter COLORDEPTH = 11;
-parameter SCREENWIDTH = 1600;
-reg clk = 1;
-reg rst = 1;
-reg datavalid;
-wire [COLORDEPTH-1:0] data_i;
-wire [COLORDEPTH-1:0] px_line_n2_o;
-wire [COLORDEPTH-1:0] px_line_n1_o;
-wire [COLORDEPTH-1:0] px_line_n0_o;
-
-buffer #(
-    .COLORDEPTH(COLORDEPTH),
-    .SCREENWIDTH(SCREENWIDTH)
-    ) uut (
-    .clk            (clk),
-    .rst            (rst),
-    .datavalid      (datavalid),
-    .data_i         (data_i),
-    .px_line_n2_o   (px_line_n2_o),
-    .px_line_n1_o   (px_line_n1_o),
-    .px_line_n0_o   (px_line_n0_o)
-);
+parameter SCREENWIDTH = 25;
+parameter BUF_DEPTH = 5;
+logic clk = 1;
+logic rst = 1;
+logic dv_i, hs_i, vs_i;
+logic [COLORDEPTH-1:0] data_i;
+logic [COLORDEPTH-1:0] buff_o [BUF_DEPTH-1:0];
 
 always #5
    clk <= ~clk;
@@ -36,41 +22,47 @@ begin
 end
 
 
+logic [10:0] cntr;
+reg [23:0] rgb;
 
-reg [10:0] line_cntr;
-reg [10:0] cntr;
-wire addr_roll_over;
-wire gen_roll_over;
-
+// rgb data gen
 always @(posedge clk) begin
-    if (rst)
-        cntr <= 0;
-    else if (line_cntr[3] == 1'b0)
-        cntr <= cntr + 1'b1;
-    else if (line_cntr[3] == 1'b1)
-        cntr <= cntr - 1'b1;
+    if (rst) 
+        rgb <= 23'had98b7;
+    else
+        rgb <= { rgb[22:0], rgb[3] ^ rgb[8] ^ rgb[13] ^ rgb[22]};
 end
 
-assign data_i = cntr[COLORDEPTH-1:0];
-
-assign addr_roll_over = (cntr == (SCREENWIDTH-1) );
-assign gen_roll_over = (cntr == 11'd2047);
-always @(posedge clk) begin
-    if (rst)
-        line_cntr <= 0;
-    else if (gen_roll_over)
-        line_cntr <= line_cntr + 1;
-end
-
-always @(posedge clk) begin
-    if (rst)
-        datavalid <= 1;
-    else if (gen_roll_over)
-        datavalid <= 1;
-    else if (addr_roll_over)
-        datavalid <= 0;
-end
+vga_timing #(
+        .H_VISIBLE(SCREENWIDTH)
+    )timing (
+        .clk(clk),
+        .rst(rst),
+        .h_sync(hs_i),
+        .v_sync(vs_i),
+        .h_cnt(cntr),
+        .blank(blank)
+);
+assign dv_i = ~blank;
+assign data_i = dv_i ?  rgb[COLORDEPTH-1:0] : 0;
 
 
+buffer #(
+    .COLORDEPTH(COLORDEPTH),
+    .SCREENWIDTH(SCREENWIDTH),
+    .BUF_DEPTH(BUF_DEPTH)
+    ) uut (
+    .clk            (clk),
+    .rst            (rst),
+    .data_i         (data_i),
+    .line_end       (gen_roll_over),
+    .dv_i           (dv_i),
+    .hs_i           (hs_i),
+    .vs_i           (vs_i),
+    .dv_o           (dv_o),
+    .hs_o           (hs_o),
+    .vs_o           (vs_o),
+    .buff_o         (buff_o)
+);
 
 endmodule
