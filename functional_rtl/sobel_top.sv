@@ -56,7 +56,7 @@ convolution #(
     .rst(rst),
     .vect_in(gb_line_o),
     .conv_o(conv_o),
-    .line_end(line_end_blur),
+    .line_end_o(line_end_blur),
     .vs_i(vs_i),
     .dv_i(dv_gb_o),
     .dv_o(dv_blur_o)  
