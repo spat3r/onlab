@@ -11,7 +11,7 @@ wire [23:0] rgb_i;
 wire [23:0]  rgb_o;
 wire        dv_i;
 wire        hs_i;
-wire        vs_i;
+wire        vs_i, vs_o;
 
 always #5
    clk <= ~clk;
@@ -21,6 +21,11 @@ begin
    rst <= 1;
    #102 
    rst <= 0;
+
+   @(posedge vs_o)
+   @(negedge vs_o)
+   @(posedge hs_o)
+   $stop;
 end
 
 
@@ -43,12 +48,13 @@ sobel_top #(
         .vs_o(vs_o)
     );
 
-vga_timing timing (
-    .clk(clk),
-    .rst(rst),
-    .h_sync(hs_i),
-    .v_sync(vs_i),
-    .blank(blank)
+vga_timing #(
+    )timing (
+        .clk(clk),
+        .rst(rst),
+        .h_sync(hs_i),
+        .v_sync(vs_i),
+        .blank(blank)
 );
 assign dv_i = ~blank;
 
