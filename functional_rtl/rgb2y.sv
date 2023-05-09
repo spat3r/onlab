@@ -4,8 +4,10 @@ module rgb2y #(
     ) (
     input  logic       clk,
     input  logic       rst,
-    input  logic[23:0] rgb_i,
-    output logic[7:0]  gamma_o,
+    input  logic [7:0] red_i,
+    input  logic [7:0] green_i,
+    input  logic [7:0] blue_i,
+    output logic [7:0] gamma_o,
     input  logic       dv_i,
     input  logic       hs_i,
     input  logic       vs_i,
@@ -15,17 +17,12 @@ module rgb2y #(
     output logic       line_end_o
     );
 
-    logic[7:0] r, g, b;
     logic[7:0] r_mul_d, g_mul_d, b_mul_d;
     logic[7:0] r_mul_q, g_mul_q, b_mul_q;
 
-    assign r = dv_i ? rgb_i [23:16] : 8'b0;
-    assign g = dv_i ? rgb_i [15:8]  : 8'b0;
-    assign b = dv_i ? rgb_i [7:0]   : 8'b0;
-
-    assign r_mul_d = (r >> 2) + (r >> 5);
-    assign g_mul_d = (g >> 1) + (g >> 4);
-    assign b_mul_d = (b >> 4) + (b >> 5); // + (b >> 6) + (b >> 7);
+    assign r_mul_d = (red_i   >> 2) + (red_i   >> 5);
+    assign g_mul_d = (green_i >> 1) + (green_i >> 4);
+    assign b_mul_d = (blue_i  >> 4) + (blue_i  >> 5);// + (blue_i >> 6) + (blue_i >> 7);
     
     always @(posedge clk ) begin
         if (rst) begin
@@ -53,9 +50,9 @@ module rgb2y #(
 
     always_ff @(posedge clk) begin
         if (rst) begin
-            dv_shr <= 0;
-            hs_shr <= 0;
-            vs_shr <= 0;
+            dv_shr <= 0; dv_o <= 0;
+            hs_shr <= 0; hs_o <= 0;
+            vs_shr <= 0; vs_o <= 0;
         end else begin
             dv_shr <= {dv_shr[0],dv_i};
             hs_shr <= {hs_shr[0],hs_i};
@@ -78,8 +75,10 @@ module rgb2y_2 #(
     ) (
     input  logic       clk,
     input  logic       rst,
-    input  logic[23:0] rgb_i,
-    output logic[7:0]  gamma_o,
+    input  logic [7:0] red_i,
+    input  logic [7:0] green_i,
+    input  logic [7:0] blue_i,
+    output logic [7:0] gamma_o,
     input  logic       dv_i,
     input  logic       hs_i,
     input  logic       vs_i,
@@ -89,18 +88,13 @@ module rgb2y_2 #(
     output logic       line_end_o
     );
 
-    logic[7:0] r, g, b;
     logic[7:0] rb_mul_d, g_mul_d;
     logic[7:0] rb_mul_q, g_mul_q;
 
-    assign r = dv_i ? rgb_i [23:16] : 8'b0;
-    assign g = dv_i ? rgb_i [15:8]  : 8'b0;
-    assign b = dv_i ? rgb_i [7:0]   : 8'b0;
-
     //  osszesen 6 shiftelt osszeget kell osszeadni mindket esetben
     //  6:3-as kompresszorral szintetizalhato
-    assign rb_mul_d = r*8'b00110110 + b*8'b00010010 ;
-    assign g_mul_d =  g*8'b10110111;
+    assign rb_mul_d = red_i*8'b00110110 + blue_i*8'b00010010 ;
+    assign g_mul_d =  green_i*8'b10110111;
 
     always_ff @(posedge clk ) begin
         if (rst) begin
@@ -127,9 +121,9 @@ module rgb2y_2 #(
 
     always_ff @(posedge clk) begin
         if (rst) begin
-            dv_shr <= 0;
-            hs_shr <= 0;
-            vs_shr <= 0;
+            dv_shr <= 0; dv_o <= 0;
+            hs_shr <= 0; hs_o <= 0;
+            vs_shr <= 0; vs_o <= 0;
         end else begin
             dv_shr <= {dv_shr[0],dv_i};
             hs_shr <= {hs_shr[0],hs_i};
@@ -152,7 +146,9 @@ module rgb2y_3 #(
     ) (
     input  logic        clk,
     input  logic        rst,
-    input  logic [23:0] rgb_i,
+    input  logic [7:0]  red_i,
+    input  logic [7:0]  green_i,
+    input  logic [7:0]  blue_i,
     output logic [7:0]  gamma_o,
     input  logic        dv_i,
     input  logic        hs_i,
@@ -163,19 +159,13 @@ module rgb2y_3 #(
     output logic        line_end_o
     );
 
-    logic[7:0] r, g, b;
     logic[7:0] g_reg[1:0];
     logic[7:0] b_reg;
 
-    // rgb VEKTOR SZETVALASZTSA KOMPONENSEK SZERINT
-    assign r = dv_i ? rgb_i [23:16] : 8'b0;
-    assign g = dv_i ? rgb_i [15:8]  : 8'b0;
-    assign b = dv_i ? rgb_i [7:0]   : 8'b0;
-
     // G ES B MENTESE A KESLELTETESEK MIATT
     always_ff @(posedge clk ) begin
-        b_reg <= b;
-        g_reg[0] <= g;
+        b_reg <= blue_i;
+        g_reg[0] <= green_i;
         g_reg[1] <= g_reg[0];
     end
 
@@ -183,8 +173,8 @@ module rgb2y_3 #(
 
     dsp_25x18_presub #(.USE_PCI_REG(1)) dsp_25x18_rg(
         .clk(clk),
-        .a({1'b0,r,16'b0}),
-        .d({1'b0,g,21'b0}),
+        .a({1'b0,red_i,16'b0}),
+        .d({1'b0,green_i,21'b0}),
         //  KR = 0,2126 *2^17 = 27866
         .b(18'd27866),
         .pci({1'b0,g_reg[1],39'b0}), 
@@ -215,9 +205,9 @@ module rgb2y_3 #(
 
     always_ff @(posedge clk) begin
         if (rst) begin
-            dv_shr <= 0;
-            hs_shr <= 0;
-            vs_shr <= 0;
+            dv_shr <= 0; dv_o <= 0;
+            hs_shr <= 0; hs_o <= 0;
+            vs_shr <= 0; vs_o <= 0;
         end else begin
             dv_shr <= {dv_shr[3:0],dv_i};
             hs_shr <= {hs_shr[3:0],hs_i};
