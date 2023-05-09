@@ -58,7 +58,7 @@ generate
         // d_in -> szorzás -> tárolás -> soron belül -> tárolás 
         //      -> sorok között -> tárolás -> d_out
 
-        assign px_d[k] = ((k % M_DEPTH) == 0) ? {1'b0,vect_in[$floor(k/M_DEPTH)]} : px_q[k-1];
+        assign px_d[k] = ((k % M_DEPTH) == 0) ? {1'b0,vect_in[k/M_DEPTH]} : px_q[k-1];
 
         always_ff @( posedge clk ) px_q[k] <= px_d[k];
 
@@ -80,7 +80,7 @@ endgenerate
     logic [14:0] dv_shr;
     logic [14:0] hs_shr;
     logic [14:0] vs_shr;
-    wire  line_end_d = dv_shr[12] & ~dv_shr[11];
+    logic line_end_d = dv_shr[12] & ~dv_shr[11];
 
     // dsp delay is 4 cycle, matrix size 3x3 => 9 cycle
     // total delay 13 cycle, 12 shr delay + 1 _o write delay 
