@@ -80,7 +80,7 @@ endgenerate
     logic [14:0] dv_shr;
     logic [14:0] hs_shr;
     logic [14:0] vs_shr;
-    wire  line_end_d = dv_shr[0] & ~dv_i;
+    wire  line_end_d = dv_shr[12] & ~dv_shr[11];
 
     // dsp delay is 4 cycle, matrix size 3x3 => 9 cycle
     // total delay 13 cycle, 12 shr delay + 1 _o write delay 
