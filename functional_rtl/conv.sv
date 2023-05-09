@@ -86,9 +86,9 @@ endgenerate
     // total delay 13 cycle, 12 shr delay + 1 _o write delay 
     always_ff @(posedge clk) begin
         if (rst) begin
-            dv_shr <= 0;
-            hs_shr <= 0;
-            vs_shr <= 0;
+            dv_shr <= 0; dv_o <= 0;
+            hs_shr <= 0; hs_o <= 0;
+            vs_shr <= 0; vs_o <= 0;
         end else begin
             dv_shr <= {dv_shr[13:0],dv_i};
             hs_shr <= {hs_shr[13:0],hs_i};
