@@ -7,7 +7,7 @@ module buffer #(
     input  logic                  clk,
     input  logic                  rst,
     input  logic [COLORDEPTH-1:0] data_i,
-    input  logic                  line_end,
+    input  logic                  line_end_i,
     input  logic                  dv_i,
     input  logic                  hs_i,
     input  logic                  vs_i,
@@ -23,15 +23,9 @@ logic [10:0] addr;
 always @(posedge clk) begin
     if (rst) begin
         addr <= 0;
-        dv_o <= 0;
-        vs_o <= 0;
-        hs_o <= 0;
     end else begin
         if (dv_i) addr <= addr + 1;
         else      addr <= 0;
-        dv_o <= dv_i;
-        hs_o <= hs_i;
-        if ( ~hs_o & hs_i) vs_o <= vs_i;
     end
 end
 
@@ -64,5 +58,22 @@ generate
     end
 endgenerate
 
+    logic [1:0] dv_shr;
+    logic [1:0] hs_shr;
+    logic [2:0] vs_shr;
 
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            dv_shr <= 0; dv_o <= 0;
+            hs_shr <= 0; hs_o <= 0;
+            vs_shr <= 0; vs_o <= 0;
+        end else begin
+            dv_shr <= {dv_shr[0],dv_i};
+            hs_shr <= {hs_shr[0],hs_i};
+            if ( ~hs_o & hs_i) vs_shr <= {vs_shr[1:0],vs_i};
+            dv_o <= dv_shr[0];
+            hs_o <= hs_shr[0];
+            vs_o <= vs_shr[2];
+        end
+    end
 endmodule
