@@ -18,22 +18,22 @@ module gauss_blr_conv #(
 );
 
     // matrix elements
-    logic signed [8:0] px_d [8:0];
-    logic signed [8:0] px_q [8:0];
+    logic [7:0] px_d [8:0];
+    logic [7:0] px_q [8:0];
     //TODO: kideríteni hogy az shiftelésnél okosabb e az SV mint én xd
     // matrix row-sum
-    logic signed [10:0] gx_d [2:0];
+    logic [10:0] gx_d [2:0];
     // matrix column-sum
-    logic signed [10:0] gx_q [2:0];
+    logic [10:0] gx_q [2:0];
     // result
-    logic signed [11:0] res_d;
-    logic signed [11:0] res_q;
-    logic        [7:0]  conv_d;
+    logic [11:0] res_d;
+    logic [11:0] res_q;
+    logic [7:0]  conv_d;
 
     genvar k;
 generate
     for (k = 0; k < M_DEPTH*M_WIDTH; k = k + 1) begin
-        assign px_d[k] = ((k % M_DEPTH) == 0) ? {1'b0,vect_in[k/M_DEPTH]} : px_q[k-1];
+        assign px_d[k] = ((k % M_DEPTH) == 0) ? vect_in[k/M_DEPTH] : px_q[k-1];
         always_ff @( posedge clk ) px_q[k] <= px_d[k];
     end
 endgenerate
