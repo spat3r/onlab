@@ -61,13 +61,13 @@ endgenerate
     assign gy_d [2] =   (1*px_q[6]) + (2*px_q[7]) + (1*px_q[8]) ;
     
     always_ff @(posedge clk) begin
-        gx_q[0] <= gx_q[0];
-        gx_q[1] <= gx_q[1];
-        gx_q[2] <= gx_q[2];
+        gx_q[0] <= gx_d[0];
+        gx_q[1] <= gx_d[1];
+        gx_q[2] <= gx_d[2];
 
-        gy_q[0] <= gy_q[0];
-        gy_q[1] <= gy_q[1];
-        gy_q[2] <= gy_q[2];
+        gy_q[0] <= gy_d[0];
+        gy_q[1] <= gy_d[1];
+        gy_q[2] <= gy_d[2];
     end
 
     assign resx_d =  gx_q[0] + gx_q[1] + gx_q[2];
@@ -81,8 +81,8 @@ endgenerate
         // if abs(res_q)>FF -> saturation
         if (res_q[10:8]) conv_d <= 8'hFF;
         // if negative -> invert
-        else if (res_q[10:8]) conv_d <= ~res_q[7:0] + 1'b1;
-        else                  conv_d <=  res_q[7:0];
+        else if (res_q[11]) conv_d <= ~res_q[7:0] + 1'b1;
+        else                conv_d <=  res_q[7:0];
     end
 
     always_ff @(posedge clk) conv_o <= conv_d;
