@@ -58,6 +58,8 @@ generate
     end
 endgenerate
 
+
+// TODO: the last row stays in the ram and it is transfered to the forst row of the next image
     logic [1:0] dv_shr;
     logic [1:0] hs_shr;
     logic [2:0] vs_shr;
