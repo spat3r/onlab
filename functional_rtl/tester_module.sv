@@ -43,7 +43,7 @@ initial begin
 
             //wait until next pixel
             @( h_cnt ) begin
-                if ( tb_dv_i ) begin
+                if ( vga_dv_o ) begin
                     $fscanf(datain_pointer,"[%d,%d]: red: %d, green: %d, blue: %d", current_col_i, current_row_i, red_rd, green_rd, blue_rd);
                     // TODO: assert col == hcnt
                     // TODO: assert row == vcnt
