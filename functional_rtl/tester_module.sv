@@ -62,6 +62,11 @@ initial begin
 
 end
 
+always @(posedge clk) begin
+    tb_dv_i <= vga_dv_o;
+    tb_hs_i <= vga_hs_o;
+    tb_vs_i <= vga_vs_o;
+end
 
 initial begin
 
