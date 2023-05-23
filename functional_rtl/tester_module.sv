@@ -73,7 +73,7 @@ initial begin
     @(posedge rst)
     @(negedge rst)
 
-    dataout_pointer = $fopen("pic_output.txt","w");
+    dataout_pointer = $fopen("pic_output.txt","r");
     if (!dataout_pointer) $display("Couldn't open pic_output.txt");
     else $display("dataout_pointer = %b", dataout_pointer);
 
