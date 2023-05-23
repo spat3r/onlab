@@ -59,22 +59,16 @@ endgenerate
 
 
 // TODO: the last row stays in the ram and it is transfered to the forst row of the next image
-    logic [1:0] dv_shr;
-    logic [1:0] hs_shr;
-    logic [2:0] vs_shr;
 
     always_ff @(posedge clk) begin
         if (rst) begin
-            dv_shr <= 0; dv_o <= 0;
-            hs_shr <= 0; hs_o <= 0;
-            vs_shr <= 0; vs_o <= 0;
+            dv_o <= 0;
+            hs_o <= 0;
+            vs_o <= 0;
         end else begin
-            dv_shr <= {dv_shr[0],dv_i};
-            hs_shr <= {hs_shr[0],hs_i};
-            if ( ~hs_o & hs_i) vs_shr <= {vs_shr[1:0],vs_i};
-            dv_o <= dv_shr[0];
-            hs_o <= hs_shr[0];
-            vs_o <= vs_shr[2];
+            dv_o <= dv_i;
+            hs_o <= hs_i;
+            vs_o <= vs_i;
         end
     end
 endmodule
