@@ -68,10 +68,11 @@ endgenerate
 
     always_ff @(posedge clk) conv_o <= conv_d;
 
-    logic [2:0] dv_shr;
-    logic [2:0] hs_shr;
-    logic [2:0] vs_shr;
+    logic [5:0] dv_shr;
+    logic [5:0] hs_shr;
+    logic [5:0] vs_shr;
     wire  line_end_d = dv_shr[2] & ~dv_shr[1];
+    logic [3:0] hs_cnt;
 
 
     always_ff @(posedge clk) begin
@@ -79,14 +80,19 @@ endgenerate
             dv_shr <= 0; dv_o <= 0;
             hs_shr <= 0; hs_o <= 0;
             vs_shr <= 0; vs_o <= 0;
+            hs_cnt <= 0;
         end else begin
-            dv_shr <= {dv_shr[1:0],dv_i};
-            hs_shr <= {hs_shr[1:0],hs_i};
-            vs_shr <= {vs_shr[1:0],vs_i};
+            if (line_end_o & !hs_cnt[1]) hs_cnt <= hs_cnt + 1;
+            else if (vs_i)               hs_cnt <= 0;
+
+            dv_shr <= {dv_shr[5:0],dv_i};
+            if ( ~hs_o & hs_i)  vs_shr <= {vs_shr[5:0],vs_i};
+
+            hs_shr <= {hs_shr[5:0],hs_i};
             line_end_o <= line_end_d;
-            dv_o <= dv_shr[2];
-            hs_o <= hs_shr[2];
-            vs_o <= vs_shr[2];
+            if ( hs_cnt[1] )    dv_o <= dv_shr[4] & dv_shr[2];
+            hs_o <= hs_shr[4];
+            vs_o <= vs_shr[4];
         end
     end
 
