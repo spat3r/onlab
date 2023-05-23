@@ -7,13 +7,13 @@ import math
 # from matplotlib import pyplot as plt
 import cv2 as cv
 
-try: 
-    corgi  = cv.imread("corgi.jpg") 
-except IOError:
-    pass
+# try: 
+#     corgi  = cv.imread("corgi.jpg") 
+# except IOError:
+#     pass
 
 try: 
-    goldi  = cv.imread("goldi.jpg",1) 
+    goldi  = cv.imread("64x64_test_in.png",1) 
 except IOError:
     pass
 
@@ -50,7 +50,7 @@ def convolution(kernel, img, i, j):
     for k in range(kh):
         for l in range(kw):
             if ( (i+k-1)>0 and (j+l-1)>0 and (i+k-1)<h and (j+l-1)<w ):
-                result += (img[i+k-1,j+l-1] * kernel[k, l])
+                result += np.floor(img[i+k-1,j+l-1] * kernel[k, l])
     result = math.fabs(result)
     return result if (result < 255) else 255
 
@@ -131,33 +131,57 @@ def sobel_net(img):
     grad = cv.addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0)
     return grad
 
+
+
 cv.imshow('startpick', goldi)
-goldi_bit = sobel_bit(goldi)
-cv.imshow('goldi_bit', goldi_bit)
+# goldi_bit = sobel_bit(goldi)
+# cv.imshow('goldi_bit', goldi_bit)
 goldi_net = sobel_net(goldi)
-cv.imshow('goldi_net', goldi_net)
-goldi_my = sobel_my(goldi)
-cv.imshow('goldi_my', goldi_my)
+# cv.imshow('goldi_net', goldi_net)
+# goldi_my = sobel_my(goldi)
+# cv.imshow('goldi_my', goldi_my)
 
 height = goldi.shape[0]
 width = goldi.shape[1]
 
 print(height, width)
 
-diff_net_my =  np.zeros((height,width), np.uint8)
-diff_my_bit =  np.zeros((height,width), np.uint8)
-diff_my_bit_5x =  np.zeros((height,width), np.uint8)
+# diff_net_my =  np.zeros((height,width), np.uint8)
+# diff_my_bit =  np.zeros((height,width), np.uint8)
+# diff_my_bit_5x =  np.zeros((height,width), np.uint8)
 
-for i in range(height):
-    for j in range(width):
-        diff_net_my[i,j] = (goldi_net[i,j] - goldi_my[i,j]) if (goldi_net[i,j] > goldi_my[i,j]) else (goldi_my[i,j] - goldi_net[i,j])
-        diff_my_bit[i,j] = (goldi_my[i,j] - goldi_bit[i,j]) if (goldi_my[i,j] > goldi_bit[i,j]) else (goldi_bit[i,j] - goldi_my[i,j])
-        diff_my_bit_5x[i,j] = diff_my_bit[i,j]*200
+# for i in range(height):
+#     for j in range(width):
+#         diff_net_my[i,j] = (goldi_net[i,j] - goldi_my[i,j]) if (goldi_net[i,j] > goldi_my[i,j]) else (goldi_my[i,j] - goldi_net[i,j])
+#         diff_my_bit[i,j] = (goldi_my[i,j] - goldi_bit[i,j]) if (goldi_my[i,j] > goldi_bit[i,j]) else (goldi_bit[i,j] - goldi_my[i,j])
+#         diff_my_bit_5x[i,j] = diff_my_bit[i,j]*200
 
 
-cv.imshow('diff_net_my', diff_net_my)
-cv.imshow('diff_my_bit', diff_my_bit)
-cv.imshow('diff_my_bit_5x', diff_my_bit_5x)
+# cv.imshow('diff_net_my', diff_net_my)
+# cv.imshow('diff_my_bit', diff_my_bit)
+# cv.imshow('diff_my_bit_5x', diff_my_bit_5x)
 
+
+with open('pic_input.txt', 'w') as f:
+    for y in range(goldi.shape[0]):
+        for x in range(goldi.shape[1]):
+            f.write(f'[{x},{y}]: red: {goldi[x][y][0]}, green: {goldi[x][y][1]}, blue: {goldi[x][y][2]}')
+            f.write('\n')
+
+with open('pic_output.txt', 'w') as f:
+    for y in range(goldi_net.shape[0]):
+        for x in range(goldi_net.shape[1]):
+            f.write(f'[{x},{y}]: {goldi_net[x][y]}')
+            f.write('\n')
+
+
+duv =  np.zeros((height,width), np.uint8)
+
+with open('duv.txt', 'r') as f:
+    for y in range(63):
+        for x in range(63):
+            duv[x][y] = f.readline()
+
+cv.imshow('duv', duv)
 cv.waitKey(0)
 
