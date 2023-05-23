@@ -38,35 +38,36 @@ initial begin
     @(posedge rst)
     @(negedge rst)
 
-    for (longint j = 0; j < VRES ; j++) begin
-        for (longint k = 0; k < HRES ; k++) begin
+    while(1) begin
 
-            //wait until next pixel
-            @( h_cnt ) begin
-                if ( vga_dv_o ) begin
-                    $fscanf(datain_pointer,"[%d,%d]: red: %d, green: %d, blue: %d", current_col_i, current_row_i, red_rd, green_rd, blue_rd);
-                    //$display("[%d,%d]: red: %d, green: %d, blue: %d", current_col_i, current_row_i, red_rd, green_rd, blue_rd);
-                    // TODO: assert col == hcnt
-                    // TODO: assert row == vcnt
-                    tb_red_i = red_rd[7:0];
-                    tb_green_i = green_rd[7:0];
-                    tb_blue_i = blue_rd[7:0];
-                    // $fdisplay(dataout_pointer,"\t\t%d. coord_a: %f, coord_b: %f", currentCoord, coord_a_f, coord_b_f);
-                // $display("\t\t%d. coord_a: %f, coord_b: %f", currentCoord, coord_a_f, coord_b_f);                    
-                end
+        //wait until next pixel
+        @( h_cnt ) begin
+            if ( vga_dv_o ) begin
+                $fscanf(datain_pointer,"[%d,%d]: red: %d, green: %d, blue: %d", current_col_i, current_row_i, red_rd, green_rd, blue_rd);
+                //$display("[%d,%d]: red: %d, green: %d, blue: %d", current_col_i, current_row_i, red_rd, green_rd, blue_rd);
+                // TODO: assert col == hcnt
+                // TODO: assert row == vcnt
+                tb_red_i = red_rd[7:0];
+                tb_green_i = green_rd[7:0];
+                tb_blue_i = blue_rd[7:0];
+                // $fdisplay(dataout_pointer,"\t\t%d. coord_a: %f, coord_b: %f", currentCoord, coord_a_f, coord_b_f);
+            // $display("\t\t%d. coord_a: %f, coord_b: %f", currentCoord, coord_a_f, coord_b_f);                    
             end
         end
     end
-    $fclose(datain_pointer);
-    $stop;
 
+    $fclose(datain_pointer);
 end
+
+
 
 always @(posedge clk) begin
     tb_dv_i <= vga_dv_o;
     tb_hs_i <= vga_hs_o;
     tb_vs_i <= vga_vs_o;
 end
+
+
 
 initial begin
 
@@ -79,30 +80,28 @@ initial begin
 
     csv_pointer = $fopen("csv.csv","w");
     if (!csv_pointer) $display("Couldn't open csv.csv");
-    else $display("csv_pointer = %b", csv_pointer);
+    else $display("csv_pointer = %d", csv_pointer);
     
     $fdisplay(csv_pointer,"col;row;duv;py");
 
 
-    for (longint j = 0; j < VRES ; j++) begin
-        for (longint k = 0; k < HRES ; k++) begin
+    while(1) begin
 
-            //wait until next pixel
-            @( h_cnt ) begin
-                if ( tb_dv_i ) begin
-                    $fscanf(dataout_pointer,"[%d,%d]: %d", current_col_o, current_row_o, result_rd);
-                    // TODO: assert col == hcnt
-                    // TODO: assert row == vcnt
-                    
-                    $fdisplay(csv_pointer,"%d;%d;%d;%d", current_col_o, current_row_o, tb_red_o, result_rd);
-                    // TODO: assert (tb_red_o >> 1) == (result >> 1)
-                end
+        //wait until next pixel
+        @( h_cnt ) begin
+            if ( tb_dv_o ) begin
+                $fscanf(dataout_pointer,"[%d,%d]: %d", current_col_o, current_row_o, result_rd);
+                // TODO: assert col == hcnt
+                // TODO: assert row == vcnt
+                
+                $fdisplay(csv_pointer,"%d;%d;%d;%d", current_col_o, current_row_o, tb_red_o, result_rd);
+                // TODO: assert (tb_red_o >> 1) == (result >> 1)
             end
         end
     end
 
     $fclose(dataout_pointer);
-    $stop;
+    $fclose(csv_pointer);
 end
 
 endmodule
