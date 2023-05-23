@@ -41,9 +41,9 @@ endgenerate
     //      | -1 0 1 |    |  px_r0_c0  px_r0_c-1  px_r0_c-2 |
     // Gx = | -2 0 2 | .* | px_r-1_c0 px_r-1_c-1 px_r-1_c-2 |
     //      | -1 0 1 |    | px_r-2_c0 px_r-2_c-1 px_r-2_c-2 |
-    assign gx_d [0] =   (1*px_q[0]) + (2*px_q[1]) + (1*px_q[2]) ;
-    assign gx_d [1] =   (2*px_q[3]) + (4*px_q[4]) + (2*px_q[5]) ;
-    assign gx_d [2] =   (1*px_q[6]) + (2*px_q[7]) + (1*px_q[8]) ;
+    assign gx_d [0] =   (1*px_q[0]) + (1*px_q[1]) + (1*px_q[2]) ;
+    assign gx_d [1] =   (1*px_q[3]) + (2*px_q[4]) + (1*px_q[5]) ;
+    assign gx_d [2] =   (1*px_q[6]) + (1*px_q[7]) + (1*px_q[8]) ;
     
     always_ff @(posedge clk) begin
         gx_q[0] <= gx_d[0];
