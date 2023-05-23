@@ -51,18 +51,18 @@ buffer #(
     .COLORDEPTH(COLORDEPTH),
     .SCREENWIDTH(SCREENWIDTH),
     .BUF_DEPTH(BUF_DEPTH)
-    ) uut (
+   ) gray_buff_inst (
     .clk            (clk),
     .rst            (rst),
     .data_i         (data_i),
-    .line_end       (gen_roll_over),
     .dv_i           (dv_i),
     .hs_i           (hs_i),
     .vs_i           (vs_i),
     .dv_o           (dv_o),
     .hs_o           (hs_o),
     .vs_o           (vs_o),
-    .buff_o         (buff_o)
+    .line_end_i     (line_end),
+    .buff_o         (gb_line_o)
 );
 
 endmodule

@@ -1,6 +1,5 @@
 module sobel_conv #(
     parameter COLORDEPTH = 8,
-
     parameter M_WIDTH = 3,
     parameter M_DEPTH = 3
     ) (

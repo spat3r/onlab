@@ -1,7 +1,6 @@
 module buffer #(
     parameter COLORDEPTH = 8,
     parameter SCREENWIDTH = 1600,
-    parameter LINE_END = 2048,
     parameter BUF_DEPTH = 3
 ) (
     input  logic                  clk,

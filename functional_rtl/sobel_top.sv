@@ -1,4 +1,9 @@
-module sobel_top (
+module sobel_top #(
+    parameter COLORDEPTH = 8,
+    parameter SCREENWIDTH = 1600,
+    parameter POL_VS = 1,
+    parameter POL_HS = 1
+    )(
     input  logic        clk,
     input  logic        rst,
     input  logic  [7:0] sw,
@@ -15,6 +20,12 @@ module sobel_top (
     output logic        hs_o,
     output logic        vs_o
 );
+
+
+logic hs_in, vs_in;
+assign hs_in = POL_HS ? hs_i : ~hs_i;
+assign vs_in = POL_VS ? vs_i : ~vs_i;
+
 
 logic dv_y, hs_y, vs_y;
 logic dv_gb, hs_gb, vs_gb;
@@ -37,8 +48,8 @@ rgb2y #(
     .blue_i         (blue_i),
     .gamma_o        (gamma_o),
     .dv_i           (dv_i),
-    .hs_i           (hs_i),
-    .vs_i           (vs_i),
+    .hs_i           (hs_in),
+    .vs_i           (vs_in),
     .dv_o           (dv_y),
     .hs_o           (hs_y),
     .vs_o           (vs_y),
@@ -46,7 +57,9 @@ rgb2y #(
 );
 
 buffer #(
-    .COLORDEPTH(8)
+    .COLORDEPTH(COLORDEPTH),
+    .SCREENWIDTH(SCREENWIDTH),
+    .BUF_DEPTH(3)
    ) gray_buff_inst (
     .clk            (clk),
     .rst            (rst),
@@ -63,7 +76,9 @@ buffer #(
 
 gauss_blr_conv #(
 // convolution #(
-    .COLORDEPTH(8)
+    .COLORDEPTH(COLORDEPTH),
+    .M_WIDTH(3),
+    .M_DEPTH(3)
     ) blur_inst (
     .clk            (clk),
     .rst            (rst),
@@ -79,7 +94,9 @@ gauss_blr_conv #(
 );
 
 buffer #(
-    .COLORDEPTH(8)
+    .COLORDEPTH(COLORDEPTH),
+    .SCREENWIDTH(SCREENWIDTH),
+    .BUF_DEPTH(3)
     ) blr_buff_inst (
     .clk            (clk),
     .rst            (rst),
@@ -96,7 +113,9 @@ buffer #(
 
 sobel_conv #(
 // convolution #(
-    .COLORDEPTH(8)
+    .COLORDEPTH(COLORDEPTH),
+    .M_WIDTH(3),
+    .M_DEPTH(3)
     ) sob_inst (
     .clk            (clk),
     .rst            (rst),
@@ -114,36 +133,36 @@ sobel_conv #(
 always_ff @ ( posedge clk ) begin : output_multiplexer
     case (sw)
         5'd0: begin : input_passtrough
-            dv_o <= dv_i;         hs_o <= hs_i;             vs_o <= vs_i;
-            red_o <= red_i;       green_o <= green_i;       blue_o <= blue_i;
+            dv_o <= dv_i;                           red_o   <= red_i;         
+            hs_o <= POL_HS ? hs_i : ~hs_i;          green_o <= green_i;
+            vs_o <= POL_VS ? vs_i : ~vs_i;          blue_o  <= blue_i;
+            
     end
         5'd1: begin : gamma_out
-            dv_o <= dv_y;          hs_o <= hs_y;            vs_o <= vs_y;
-            red_o <= gamma_o;      green_o <= gamma_o;      blue_o <= gamma_o;
+            dv_o <= dv_y;                           red_o   <= gamma_o;       
+            hs_o <= POL_HS ? hs_y : ~hs_y;          green_o <= gamma_o;
+            vs_o <= POL_VS ? vs_y : ~vs_y;          blue_o  <= gamma_o;
+            
     end
-        5'd2: begin : gauss_buff_out
-            dv_o <= dv_gb;         hs_o <= hs_gb;           vs_o <= vs_gb;
-            red_o <= gb_line_o[2]; green_o <= gb_line_o[2]; blue_o <= gb_line_o[2];
+        5'd2: begin : blurred_out
+            dv_o <= dv_blur;                        red_o   <= blur_o;        
+            hs_o <= POL_HS ? hs_blur : ~hs_blur;    green_o <= blur_o;
+            vs_o <= POL_VS ? vs_blur : ~vs_blur;    blue_o  <= blur_o;
+            
     end
-        5'd4: begin : blurred_out
-            dv_o <= dv_blur;       hs_o <= hs_blur;         vs_o <= vs_blur;
-            red_o <= blur_o;       green_o <= blur_o;       blue_o <= blur_o;
-    end
-        5'd8: begin : sobel_buff_out
-            dv_o <= dv_bb;         hs_o <= hs_bb;           vs_o <= vs_bb;
-            red_o <= bb_line_o[2]; green_o <= bb_line_o[2]; blue_o <= bb_line_o[2];
-    end
-        5'd16: begin :sobel_out
-            dv_o <= dv_sob;        hs_o <= hs_sob;          vs_o <= vs_sob;
-            red_o <= sob_o;        green_o <= sob_o;        blue_o <= sob_o;
+        5'd4: begin :sobel_out
+            dv_o <= dv_sob;                         red_o   <= sob_o;         
+            hs_o <= POL_HS ? hs_sob : ~hs_sob;      green_o <= sob_o;
+            vs_o <= POL_VS ? vs_sob : ~vs_sob;      blue_o  <= sob_o;
+            
     end
         default: begin : def__input_out
-            dv_o <= dv_i;          hs_o <= hs_i;            vs_o <= vs_i;
-            red_o <= red_i;        green_o <= green_i;      blue_o <= blue_i;
+            dv_o <= dv_i;                           red_o   <= red_i;         
+            hs_o <= POL_HS ? hs_i : ~hs_i;          green_o <= green_i;
+            vs_o <= POL_VS ? vs_i : ~vs_i;          blue_o  <= blue_i;
+            
     end
     endcase
 end
-
-
 
 endmodule
