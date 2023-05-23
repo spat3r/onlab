@@ -81,7 +81,7 @@ initial begin
     if (!csv_pointer) $display("Couldn't open csv.csv");
     else $display("csv_pointer = %b", csv_pointer);
     
-    $fdisplay(csv_pointer,"col;row;duv;py", current_col_o, current_row_o, tb_red_o, result_rd);
+    $fdisplay(csv_pointer,"col;row;duv;py");
 
 
     for (longint j = 0; j < VRES ; j++) begin
