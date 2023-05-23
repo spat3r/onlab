@@ -32,7 +32,7 @@ integer datain_pointer, dataout_pointer, csv_pointer;
 initial begin
     datain_pointer = $fopen("pic_input.txt","r");
     if (!datain_pointer) $display("Couldn't open pic_input.txt");
-    else $display("datain_pointer = %b", datain_pointer);
+    else $display("datain_pointer = %d", datain_pointer);
 
 
     @(posedge rst)
@@ -44,10 +44,12 @@ initial begin
             //wait until next pixel
             @( h_cnt ) begin
                 if ( tb_dv_i ) begin
-                    $fscanf(datain_pointer,"[%d,%d]: red: %d, green: %d, blue: %d", current_col, current_row, red_rd, green_rd, blue_rd);
+                    $fscanf(datain_pointer,"[%d,%d]: red: %d, green: %d, blue: %d", current_col_i, current_row_i, red_rd, green_rd, blue_rd);
                     // TODO: assert col == hcnt
                     // TODO: assert row == vcnt
-
+                    tb_red_i = red_rd[7:0];
+                    tb_green_i = green_rd[7:0];
+                    tb_blue_i = blue_rd[7:0];
                     // $fdisplay(dataout_pointer,"\t\t%d. coord_a: %f, coord_b: %f", currentCoord, coord_a_f, coord_b_f);
                 // $display("\t\t%d. coord_a: %f, coord_b: %f", currentCoord, coord_a_f, coord_b_f);                    
                 end
