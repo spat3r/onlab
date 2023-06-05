@@ -25,7 +25,7 @@ module rgb2y_assertions (
             vs_o |-> (gamma_o ==  8'hF3) ;
     endproperty
 
-    prop_o_valid: assert property (output_is_valid);
-    prop_dummy: assert property (definetly_wrong_prop);
+    prop_o_valid: assert property (output_is_valid) else $display("Output wasn't valid!");
+    prop_dummy: assert property (definetly_wrong_prop) else $display("Output wasn't valid!");
 
 endmodule
